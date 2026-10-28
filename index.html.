@@ -1,0 +1,361 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#101114">
+<title>VocalCam</title>
+<style>
+:root{color-scheme:dark;--bg:#101114;--panel:#1b1d22;--accent:#ff4d5e}
+*{box-sizing:border-box}
+body{margin:0;padding:env(safe-area-inset-top) 14px 30px;background:var(--bg);color:#f6f7fb;font:16px/1.4 -apple-system,BlinkMacSystemFont,sans-serif}
+main{max-width:700px;margin:auto}
+header,.head,.status,.label{display:flex;align-items:center;justify-content:space-between;gap:10px}
+header{padding:15px 0}
+h1{font-size:23px;margin:0}h2{font-size:16px;margin:0}
+.small,.note{color:#adb4c0;font-size:12px}
+.preview{aspect-ratio:16/9;background:#000;border-radius:15px;overflow:hidden}
+video{width:100%;height:100%;object-fit:contain;background:#000}
+.status{justify-content:flex-start;margin:10px 0;color:#adb4c0;font-size:13px}
+.dot{width:8px;height:8px;border-radius:50%;background:#777}
+.dot.live{background:#ff4d5e}
+.actions,.two{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:12px 0}
+.two{grid-template-columns:1fr 1fr}
+button{padding:12px 8px;min-height:44px;border:1px solid #363a45;border-radius:11px;background:#252830;color:white;font:inherit}
+button.primary{background:var(--accent);border-color:var(--accent);font-weight:700}
+button:disabled{opacity:.4}
+.panel{background:var(--panel);border:1px solid #363a45;border-radius:15px;padding:14px;margin:12px 0}
+.head{margin-bottom:10px}
+.presets{display:flex;gap:7px;flex-wrap:wrap}
+.presets button{font-size:13px;padding:8px 10px;min-height:36px}
+.control{padding:10px 0;border-top:1px solid #30333a}
+.label{font-size:14px;margin-bottom:5px}
+output{font-size:13px;color:#d7dbe4}
+input[type=range]{width:100%;accent-color:var(--accent)}
+select{background:#252830;color:white;padding:8px;border:1px solid #363a45;border-radius:8px}
+#error{white-space:pre-wrap;color:#ffd58a;font-size:13px;overflow-wrap:anywhere}
+#result{display:none}
+#recorded{width:100%;height:auto;border-radius:12px;margin:10px 0}
+a{color:#ff8791}
+.note{line-height:1.5}
+</style>
+</head>
+<body>
+<main>
+<header>
+ <div><h1>VocalCam</h1><div class="small">Video recording + vocal effects</div></div>
+ <span class="small">1080p target</span>
+</header>
+
+<div class="preview"><video id="camera" autoplay muted playsinline></video></div>
+<div class="status"><span id="dot" class="dot"></span><span id="status">Camera is off.</span></div>
+
+<div class="actions">
+ <button id="cameraBtn" class="primary">Start camera</button>
+ <button id="recordBtn" disabled>● Record</button>
+ <button id="flipBtn" disabled>Flip camera</button>
+</div>
+
+<section class="panel">
+ <div class="head"><h2>Presets</h2><span class="small">Quick sounds</span></div>
+ <div class="presets">
+  <button data-p="clean">Clean</button>
+  <button data-p="studio">Studio</button>
+  <button data-p="hall">Big Hall</button>
+  <button data-p="slap">Slapback</button>
+  <button data-p="grit">Gritty</button>
+ </div>
+</section>
+
+<section class="panel">
+ <div class="head"><h2>Vocal effects</h2><button id="off" style="padding:6px 9px;min-height:32px">Effects off</button></div>
+ <div class="control"><div class="label"><label for="reverb">Reverb</label><output id="reverbO">22%</output></div><input id="reverb" type="range" min="0" max="100" value="22"></div>
+ <div class="control"><div class="label"><label for="delay">Delay / echo</label><output id="delayO">0%</output></div><input id="delay" type="range" min="0" max="100" value="0"></div>
+ <div class="control"><div class="label"><label for="dist">Distortion</label><output id="distO">0%</output></div><input id="dist" type="range" min="0" max="100" value="0"></div>
+ <div class="control"><div class="label"><label for="eq">Tone / EQ</label><output id="eqO">0 dB</output></div><input id="eq" type="range" min="-12" max="12" value="0"></div>
+ <div class="control"><div class="label"><label for="comp">Compression</label><output id="compO">35%</output></div><input id="comp" type="range" min="0" max="100" value="35"></div>
+ <div class="control"><div class="label"><label for="delayTime">Delay time</label><output id="delayTimeO">280 ms</output></div><input id="delayTime" type="range" min="60" max="700" step="10" value="280"></div>
+ <p class="note">Headphones are recommended. Effects are included in the recorded audio.</p>
+</section>
+
+<section class="panel">
+ <div class="head"><h2>Recording settings</h2><span id="clock" class="small">00:00</span></div>
+ <div class="label"><label for="quality">Resolution request</label>
+ <select id="quality"><option value="1080">1080p</option><option value="720">720p</option></select></div>
+ <p class="note">Use the published HTTPS website in Safari. Keep the page open during recording.</p>
+ <div id="error"></div>
+</section>
+
+<section id="result" class="panel">
+ <div class="head"><h2>Your video</h2><span id="fileInfo" class="small"></span></div>
+ <video id="recorded" controls playsinline></video>
+ <div class="two">
+  <button id="save" class="primary">Save / Share</button>
+  <button id="new">Dismiss video</button>
+ </div>
+ <a id="download" hidden download="vocalcam-recording.webm">Download video</a>
+ <p class="note">Use the iPhone share menu and select Save Video if available.</p>
+</section>
+</main>
+
+<script>
+(() => {
+const $ = id => document.getElementById(id);
+let stream=null, ac=null, dest=null, rec=null, chunks=[];
+let canvas=null, ctx=null, frame=null, recording=false;
+let facing='environment', mirror=false, timer=null, started=0, blob=null, blobURL=null, fx=null;
+
+function say(text,live=false){
+ $('status').textContent=text;
+ $('dot').classList.toggle('live',live);
+}
+function showError(text=''){ $('error').textContent=text; }
+function clock(ms){
+ let s=Math.floor(ms/1000);
+ return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
+}
+function mimeType(){
+ if(!window.MediaRecorder)return '';
+ for(const t of ['video/mp4','video/webm;codecs=vp8,opus','video/webm']){
+  try{if(MediaRecorder.isTypeSupported(t))return t}catch(e){}
+ }
+ return '';
+}
+function impulse(){
+ const length=ac.sampleRate*2.5;
+ const b=ac.createBuffer(2,length,ac.sampleRate);
+ for(let c=0;c<2;c++){
+  const d=b.getChannelData(c);
+  for(let i=0;i<length;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/length,2.4);
+ }
+ return b;
+}
+function curve(amount){
+ const arr=new Float32Array(44100), k=amount*180;
+ for(let i=0;i<arr.length;i++){
+  const x=i*2/arr.length-1;
+  arr[i]=amount===0?x:((3+k)*x*20*Math.PI/180)/(Math.PI+k*Math.abs(x));
+ }
+ return arr;
+}
+async function setupAudio(){
+ if(ac){try{await ac.close()}catch(e){}}
+ const AC=window.AudioContext||window.webkitAudioContext;
+ if(!AC)throw Error('Web Audio is not supported in this browser.');
+ ac=new AC();
+ await ac.resume();
+
+ const source=ac.createMediaStreamSource(stream);
+ const eq=ac.createBiquadFilter();
+ eq.type='peaking';eq.frequency.value=2500;eq.Q.value=.8;
+ const shaper=ac.createWaveShaper();shaper.oversample='4x';
+ const comp=ac.createDynamicsCompressor();
+ comp.threshold.value=-22;comp.knee.value=24;comp.ratio.value=3;
+ comp.attack.value=.008;comp.release.value=.18;
+ const dry=ac.createGain(), convolver=ac.createConvolver();
+ const reverb=ac.createGain(), delay=ac.createDelay(1.5);
+ const feedback=ac.createGain(), echo=ac.createGain();
+ dest=ac.createMediaStreamDestination();
+ convolver.buffer=impulse();
+
+ source.connect(eq);eq.connect(shaper);shaper.connect(comp);
+ comp.connect(dry);dry.connect(dest);
+ comp.connect(convolver);convolver.connect(reverb);reverb.connect(dest);
+ comp.connect(delay);delay.connect(feedback);feedback.connect(delay);
+ delay.connect(echo);echo.connect(dest);
+ fx={eq,shaper,comp,reverb,delay,feedback,echo};
+ applyFX();
+}
+function applyFX(){
+ if(!fx||!ac)return;
+ const r=+$('reverb').value/100,d=+$('delay').value/100;
+ const distortion=+$('dist').value/100,e=+$('eq').value,c=+$('comp').value;
+ const now=ac.currentTime;
+ fx.reverb.gain.setTargetAtTime(r*.75,now,.025);
+ fx.echo.gain.setTargetAtTime(d*.65,now,.025);
+ fx.feedback.gain.setTargetAtTime(Math.min(.72,d*.68),now,.025);
+ fx.delay.delayTime.setTargetAtTime(+$('delayTime').value/1000,now,.025);
+ fx.shaper.curve=curve(distortion);
+ fx.eq.gain.setTargetAtTime(e,now,.025);
+ fx.comp.threshold.setTargetAtTime(-8-c*.32,now,.025);
+ fx.comp.ratio.setTargetAtTime(1+c*.09,now,.025);
+ $('reverbO').textContent=Math.round(r*100)+'%';
+ $('delayO').textContent=Math.round(d*100)+'%';
+ $('distO').textContent=Math.round(distortion*100)+'%';
+ $('eqO').textContent=(e>0?'+':'')+e+' dB';
+ $('compO').textContent=Math.round(c*100)+'%';
+ $('delayTimeO').textContent=$('delayTime').value+' ms';
+}
+function draw(){
+ if(!stream||!$('camera').videoWidth){frame=requestAnimationFrame(draw);return}
+ const v=$('camera'),w=canvas.width,h=canvas.height;
+ const scale=Math.min(w/v.videoWidth,h/v.videoHeight);
+ const dw=v.videoWidth*scale,dh=v.videoHeight*scale;
+ ctx.fillStyle='#000';ctx.fillRect(0,0,w,h);
+ ctx.save();
+ if(mirror){ctx.translate(w,0);ctx.scale(-1,1)}
+ ctx.drawImage(v,(w-dw)/2,(h-dh)/2,dw,dh);
+ ctx.restore();
+ frame=requestAnimationFrame(draw);
+}
+async function stopCamera(){
+ if(frame)cancelAnimationFrame(frame);
+ frame=null;
+ if(stream)stream.getTracks().forEach(t=>t.stop());
+ stream=null;
+ $('camera').srcObject=null;
+ if(ac){try{await ac.close()}catch(e){}}
+ ac=null;dest=null;fx=null;
+ $('cameraBtn').textContent='Start camera';
+ $('recordBtn').disabled=true;$('flipBtn').disabled=true;
+ say('Camera is off.');
+}
+async function startCamera(){
+ showError('');
+ if(!window.isSecureContext){
+  showError('Camera access requires HTTPS. Publish this page with GitHub Pages and open its https:// address in Safari. Do not open the HTML file directly.');
+  return;
+ }
+ if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
+  showError('Camera access is unavailable. Open the published HTTPS page directly in Safari, not inside an app preview.');
+  return;
+ }
+ $('cameraBtn').disabled=true;
+ try{
+  await stopCamera();
+  const size=$('quality').value==='1080'?{width:1920,height:1080}:{width:1280,height:720};
+  stream=await navigator.mediaDevices.getUserMedia({
+   video:{facingMode:{ideal:facing},width:{ideal:size.width},height:{ideal:size.height},frameRate:{ideal:30,max:30}},
+   audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false}
+  });
+  const v=$('camera');
+  v.srcObject=stream;
+  await new Promise((resolve,reject)=>{
+   if(v.readyState>=1&&v.videoWidth)return resolve();
+   const timeout=setTimeout(()=>reject(Error('Camera opened but no video appeared. Close other camera apps and try again.')),10000);
+   v.onloadedmetadata=()=>{clearTimeout(timeout);resolve()};
+   v.onerror=()=>{clearTimeout(timeout);reject(Error('Safari could not load the camera preview.'))};
+  });
+  await v.play();
+  mirror=facing==='user';
+  v.style.transform=mirror?'scaleX(-1)':'none';
+  canvas=document.createElement('canvas');
+  canvas.width=size.width;canvas.height=size.height;
+  ctx=canvas.getContext('2d');
+  await setupAudio();
+  draw();
+  $('cameraBtn').textContent='Stop camera';
+  $('recordBtn').disabled=false;$('flipBtn').disabled=false;
+  say('Camera ready. Set effects and record.',true);
+ }catch(e){
+  if(stream)stream.getTracks().forEach(t=>t.stop());
+  stream=null;$('camera').srcObject=null;
+  let message=e.message||String(e);
+  if(e.name==='NotAllowedError'||e.name==='SecurityError')
+   message='Permission denied. Allow Camera and Microphone in iPhone Settings → Safari, then reload this page and allow access.';
+  else if(e.name==='NotFoundError')message='No available camera or microphone was found.';
+  else if(e.name==='NotReadableError')message='Camera is busy. Close other apps using the camera and try again.';
+  showError('Could not start camera: '+message);
+  say('Camera unavailable.');
+ }finally{$('cameraBtn').disabled=false}
+}
+function startRecording(){
+ showError('');
+ if(!stream||!dest){showError('Start the camera first.');return}
+ if(!window.MediaRecorder){showError('Recording is unsupported in this browser. Update iOS and try again.');return}
+ const type=mimeType();
+ if(!type){showError('No supported recording format found. Try current Safari on iOS.');return}
+ const videoStream=canvas.captureStream(30);
+ const combined=new MediaStream([
+  ...videoStream.getVideoTracks(),
+  ...dest.stream.getAudioTracks()
+ ]);
+ chunks=[];
+ try{rec=new MediaRecorder(combined,{mimeType:type,videoBitsPerSecond:6000000,audioBitsPerSecond:192000})}
+ catch(e){showError('Could not start recorder: '+e.message);videoStream.getTracks().forEach(t=>t.stop());return}
+ rec.ondataavailable=e=>{if(e.data&&e.data.size)chunks.push(e.data)};
+ rec.onerror=e=>showError('Recording error: '+(e.error?.message||'Unknown error'));
+ rec.onstop=()=>{
+  blob=new Blob(chunks,{type:rec.mimeType||type});
+  if(blobURL)URL.revokeObjectURL(blobURL);
+  blobURL=URL.createObjectURL(blob);
+  $('recorded').src=blobURL;
+  const ext=blob.type.includes('mp4')?'mp4':'webm';
+  $('download').href=blobURL;
+  $('download').download='vocalcam-recording.'+ext;
+  $('download').hidden=false;
+  $('fileInfo').textContent=(blob.size/1048576).toFixed(1)+' MB · '+ext.toUpperCase();
+  $('result').style.display='block';
+  $('result').scrollIntoView({behavior:'smooth'});
+  $('recordBtn').textContent='● Record';
+  $('recordBtn').classList.remove('recording');
+  recording=false;clearInterval(timer);
+  $('cameraBtn').disabled=false;$('flipBtn').disabled=false;
+  videoStream.getTracks().forEach(t=>t.stop());
+  say('Recording ready. Review and save below.',true);
+ };
+ rec.start(1000);recording=true;started=Date.now();
+ $('clock').textContent='00:00';
+ timer=setInterval(()=>$('clock').textContent=clock(Date.now()-started),500);
+ $('recordBtn').textContent='■ Stop';
+ $('recordBtn').classList.add('recording');
+ $('cameraBtn').disabled=true;$('flipBtn').disabled=true;
+ say('Recording with live effects…',true);
+}
+function stopRecording(){if(rec&&recording&&rec.state!=='inactive')rec.stop()}
+
+$('cameraBtn').addEventListener('click',async()=>{
+ if(recording)return;
+ if(stream)await stopCamera();else await startCamera();
+});
+$('recordBtn').addEventListener('click',()=>recording?stopRecording():startRecording());
+$('flipBtn').addEventListener('click',async()=>{
+ if(recording)return;
+ facing=facing==='user'?'environment':'user';
+ await startCamera();
+});
+document.querySelectorAll('input[type=range]').forEach(el=>el.addEventListener('input',applyFX));
+$('off').addEventListener('click',()=>{
+ ['reverb','delay','dist'].forEach(id=>$(id).value=0);
+ $('eq').value=0;$('comp').value=0;applyFX();
+});
+const presets={
+ clean:{reverb:0,delay:0,dist:0,eq:0,comp:15,delayTime:220},
+ studio:{reverb:18,delay:0,dist:0,eq:2,comp:40,delayTime:280},
+ hall:{reverb:72,delay:12,dist:0,eq:1,comp:25,delayTime:420},
+ slap:{reverb:8,delay:32,dist:0,eq:1,comp:30,delayTime:115},
+ grit:{reverb:8,delay:0,dist:28,eq:3,comp:60,delayTime:260}
+};
+document.querySelectorAll('[data-p]').forEach(b=>b.addEventListener('click',()=>{
+ Object.entries(presets[b.dataset.p]).forEach(([id,val])=>$(id).value=val);
+ applyFX();
+}));
+$('quality').addEventListener('change',()=>{if(stream&&!recording)startCamera()});
+$('save').addEventListener('click',async()=>{
+ if(!blob)return;
+ const ext=blob.type.includes('mp4')?'mp4':'webm';
+ const file=new File([blob],'vocalcam-recording.'+ext,{type:blob.type});
+ try{
+  if(navigator.share&&(!navigator.canShare||navigator.canShare({files:[file]}))){
+   await navigator.share({files:[file],title:'VocalCam recording'});return;
+  }
+ }catch(e){if(e.name==='AbortError')return}
+ $('download').hidden=false;
+ $('download').textContent='Tap here to download your video';
+ showError('If sharing did not open, tap the download link. The iPhone share menu may offer Save Video.');
+});
+$('new').addEventListener('click',()=>{
+ $('result').style.display='none';
+ $('recorded').pause();$('recorded').removeAttribute('src');$('recorded').load();
+});
+window.addEventListener('pagehide',()=>{
+ if(recording)stopRecording();
+ if(stream)stream.getTracks().forEach(t=>t.stop());
+});
+})();
+</script>
+</body>
+</html>
