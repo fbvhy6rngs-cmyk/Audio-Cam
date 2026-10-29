@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -19,15 +18,37 @@ h1{font-size:25px;margin:0;letter-spacing:.04em;font-weight:900;text-transform:u
 .sub,.small,.note{color:var(--muted)}.sub{font-size:13px;margin-top:3px}.small,.note{font-size:12px}
 .pill{border:1px solid var(--line);border-radius:99px;padding:5px 9px;font-size:12px;color:var(--muted)}
 .preview{aspect-ratio:16/9;width:100%;min-height:240px;background:#000;border:2px solid #454952;border-radius:13px;overflow:hidden;display:grid;place-items:center;box-shadow:0 0 0 5px #15171b,0 12px 32px #0009;position:relative}
-#cameraPreview{width:100%;height:100%;object-fit:contain;background:#000}
+#cameraPreview{width:100%;height:100%;object-fit:cover;background:#000}
 .status{display:flex;gap:8px;align-items:center;margin:10px 2px 14px;font-size:13px;color:var(--muted)}
 .dot{width:8px;height:8px;border-radius:50%;background:#7c8290;flex:none}.dot.live{background:var(--accent)}
 .actions{display:grid;grid-template-columns:1fr 1.25fr 1fr;gap:10px;margin:15px 0 20px}
-button{font:inherit;color:var(--text);background:linear-gradient(180deg,#2b2e35,#1c1e23);border:1px solid #484c56;border-radius:9px;padding:11px 9px;min-height:44px;box-shadow:inset 0 1px #ffffff0d,0 3px 0 #08090b;transition:filter .12s,transform .12s}button:active{transform:translateY(2px);box-shadow:inset 0 1px #ffffff0d,0 1px 0 #08090b}
+button{font:inherit;color:var(--text);background:linear-gradient(180deg,#2b2e35,#1c1e23);border:1px solid #484c56;border-radius:99px;padding:11px 9px;min-height:44px;box-shadow:inset 0 1px #ffffff0d,0 3px 0 #08090b;transition:filter .12s,transform .12s}button:active{transform:translateY(2px);box-shadow:inset 0 1px #ffffff0d,0 1px 0 #08090b}
 button:disabled{opacity:.45}button.primary{background:linear-gradient(180deg,#ff704d,#d93b25);border-color:#ff886c;font-weight:800;text-transform:uppercase;letter-spacing:.04em}button.recording{background:linear-gradient(180deg,#b82132,#72101c);border-color:#f04b5a}
 .panel{background:linear-gradient(145deg,#1a1c21,#121316);border:1px solid #343740;border-radius:13px;padding:15px;margin:16px 0;box-shadow:0 8px 22px #0004}
 .panelhead{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px}
 .control{padding:12px 11px;border:1px solid #3a3e47;border-radius:10px;background:linear-gradient(145deg,#24272d,#17191d);box-shadow:inset 0 1px #ffffff09,0 3px 0 #08090b;min-width:0}.control:first-of-type{border-top:1px solid #3a3e47}
+
+/* Distinguished Input Gain Styling */
+.control.highlight-gain {
+  border: 2px solid var(--accent);
+  background: linear-gradient(145deg, #2e1c18, #1c1313);
+  box-shadow: inset 0 1px #ff704d33, 0 4px 14px #ff5a3633;
+  position: relative;
+}
+.control.highlight-gain label {
+  color: #ff8b70;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+.control.highlight-gain output {
+  color: #ffa38f;
+  font-weight: 700;
+}
+.control.highlight-gain input[type=range] {
+  accent-color: #ff704d;
+  filter: drop-shadow(0 0 4px rgba(255, 90, 54, 0.4));
+}
+
 .labelrow{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:5px;font-size:14px}
 output{font-size:13px;color:#d7dbe4;font-variant-numeric:tabular-nums}
 input[type=range]{width:100%;accent-color:var(--accent);height:28px;margin:0}
@@ -64,10 +85,10 @@ select{background:var(--panel2);color:var(--text);border:1px solid var(--line);b
 <section class="panel">
 <div class="panelhead"><div><div class="studio-tag">Dial in your tone</div><h2>Effects pedalboard</h2></div><button id="offBtn" style="min-height:34px;padding:5px 9px;font-size:12px">Effects off</button></div>
 <div class="effectsgrid">
+<div class="control highlight-gain"><div class="labelrow"><label for="gain">🎚️ Input Gain</label><output id="gainVal">100%</output></div><input id="gain" type="range" min="0" max="200" value="100"></div>
 <div class="control"><div class="labelrow"><label for="reverb">Reverb</label><output id="reverbVal">22%</output></div><input id="reverb" type="range" min="0" max="100" value="22"></div>
 <div class="control"><div class="labelrow"><label for="delay">Delay / echo</label><output id="delayVal">0%</output></div><input id="delay" type="range" min="0" max="100" value="0"></div>
 <div class="control"><div class="labelrow"><label for="distortion">Distortion</label><output id="distortionVal">0%</output></div><input id="distortion" type="range" min="0" max="100" value="0"></div>
-<div class="control"><div class="labelrow"><label for="gain">Input gain</label><output id="gainVal">100%</output></div><input id="gain" type="range" min="0" max="200" value="100"></div>
 <div class="control"><div class="labelrow"><label for="eq">Tone / EQ</label><output id="eqVal">0 dB</output></div><input id="eq" type="range" min="-12" max="12" value="0"></div>
 <div class="control"><div class="labelrow"><label for="compression">Compression</label><output id="compressionVal">35%</output></div><input id="compression" type="range" min="0" max="100" value="35"></div>
 <div class="control"><div class="labelrow"><label for="delayTime">Delay time</label><output id="delayTimeVal">280 ms</output></div><input id="delayTime" type="range" min="60" max="700" step="10" value="280"></div>
@@ -76,14 +97,14 @@ select{background:var(--panel2);color:var(--text);border:1px solid var(--line);b
 </section>
 
 <section class="panel">
-<div class="panelhead"><h2>Recording settings</h2><span id="clock" class="small">00:00</span></div>
+<div class="panelhead">2 Recording settings</h2><span id="clock" class="small">00:00</span></div>
 <div class="labelrow"><label for="quality">Resolution request</label><select id="quality"><option value="1080">1080p</option><option value="720">720p</option></select></div>
 <p class="note">Camera access requires HTTPS (for example, GitHub Pages) and permission from Safari. Keep this page open while recording.</p>
 <div id="error" role="status"></div>
 </section>
 
 <section id="result" class="panel" style="display:none">
-<div class="panelhead"><h2>Recording saved to projects</h2><span id="fileInfo" class="small"></span></div>
+<div class="panelhead">2 Recording saved to projects</h2><span id="fileInfo" class="small"></span></div>
 <label class="small" for="projectName">Project name</label><input id="projectName" class="field" maxlength="100" placeholder="Name this performance">
 <video id="recordedVideo" controls playsinline></video>
 <p class="note">Your take is automatically added to Project Library below with its effect settings. When you are ready to export, use <strong>Save / Share</strong> on that project in the library.</p>
@@ -189,7 +210,8 @@ function applyEffects(){
 function drawFrame(){
  if(!cameraStream||!preview.videoWidth){frameLoop=requestAnimationFrame(drawFrame);return;}
  const w=cameraCanvas.width,h=cameraCanvas.height,vw=preview.videoWidth,vh=preview.videoHeight;
- const scale=Math.min(w/vw,h/vh), dw=vw*scale,dh=vh*scale,dx=(w-dw)/2,dy=(h-dh)/2;
+ // Scale using Math.max to fit-and-fill the canvas frame (object-fit: cover equivalent)
+ const scale=Math.max(w/vw,h/vh), dw=vw*scale,dh=vh*scale,dx=(w-dw)/2,dy=(h-dh)/2;
  canvasContext.fillStyle='#000';canvasContext.fillRect(0,0,w,h);
  canvasContext.save();
  if(mirrored){canvasContext.translate(w,0);canvasContext.scale(-1,1);}
