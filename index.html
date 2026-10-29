@@ -12,13 +12,13 @@
   color-scheme: dark;
   --bg: #090b10;
   --panel: #131722;
-  --panel2: #1a2030;
-  --line: #2b3345;
-  --text: #f2f4fa;
-  --muted: #9aa5b8;
-  --accent: #a78bfa;
-  --green: #43dfad;
-  --red: #ff5e70;
+  --panel2: #1b2130;
+  --border: #30394a;
+  --text: #f4f6fb;
+  --muted: #9ca8bb;
+  --accent: #9c7bff;
+  --accent2: #6ce5ce;
+  --danger: #ff5d76;
 }
 * { box-sizing: border-box; }
 html { background: var(--bg); }
@@ -27,970 +27,1143 @@ body {
   background: var(--bg);
   color: var(--text);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom);
+  padding: 0 0 calc(28px + env(safe-area-inset-bottom));
 }
 button, input, select { font: inherit; }
+button, select, input[type="range"] { touch-action: manipulation; }
 button {
-  cursor: pointer;
-  border: 1px solid var(--line);
+  min-height: 44px;
+  border: 1px solid var(--border);
   border-radius: 12px;
-  padding: 12px 14px;
-  color: var(--text);
   background: var(--panel2);
-  touch-action: manipulation;
+  color: var(--text);
+  padding: 10px 13px;
+  font-weight: 650;
+  cursor: pointer;
 }
-button:disabled { opacity: .45; cursor: not-allowed; }
-button:active:not(:disabled) { transform: scale(.98); }
+button:active { transform: scale(.985); }
+button:disabled { opacity: .45; }
 button.primary {
   background: var(--accent);
-  color: #100b20;
-  border-color: var(--accent);
-  font-weight: 750;
+  color: #100d1c;
+  border-color: transparent;
 }
 button.record {
-  background: var(--red);
-  color: white;
-  border-color: var(--red);
-  font-weight: 750;
+  background: var(--danger);
+  color: #23050b;
+  border-color: transparent;
 }
-button.subtle { background: transparent; }
-button.full { width: 100%; }
+button.active {
+  border-color: var(--accent2);
+  color: var(--accent2);
+}
+input, select {
+  width: 100%;
+  min-height: 42px;
+  color: var(--text);
+  background: #0d111a;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 9px 10px;
+}
+input[type="range"] {
+  min-height: 28px;
+  padding: 0;
+  accent-color: var(--accent);
+  border: 0;
+  background: transparent;
+}
 header {
   position: sticky;
   top: 0;
-  z-index: 10;
-  background: rgba(9,11,16,.95);
+  z-index: 5;
+  padding: calc(12px + env(safe-area-inset-top)) 14px 12px;
+  background: rgba(9,11,16,.96);
+  border-bottom: 1px solid var(--border);
   backdrop-filter: blur(16px);
-  border-bottom: 1px solid var(--line);
-  padding: 12px 15px;
 }
-.header-row {
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:10px;
+.header-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 12px;
 }
-.brand {
-  font-size: 21px;
-  font-weight: 850;
-  letter-spacing: -.7px;
-}
-.brand span { color: var(--accent); }
+h1 { font-size: 21px; margin: 0; letter-spacing: -.5px; }
+h2 { font-size: 16px; margin: 0 0 13px; }
+h3 { font-size: 14px; margin: 0 0 9px; }
+.subtitle { font-size: 12px; color: var(--muted); margin-top: 4px; }
 .status {
-  color: var(--muted);
-  font-size: 12px;
-  margin-top: 3px;
+  font-size: 11px;
+  font-weight: 750;
+  color: var(--accent2);
+  border: 1px solid #28564f;
+  padding: 6px 8px;
+  border-radius: 99px;
+  white-space: nowrap;
 }
-.status-dot {
-  display:inline-block;
-  width:8px;
-  height:8px;
-  border-radius:50%;
-  background:#626c7e;
-  margin-right:6px;
-}
-.status-dot.on {
-  background:var(--green);
-  box-shadow:0 0 10px #43dfad70;
+.header-buttons {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 7px;
 }
 main {
-  max-width: 760px;
-  margin: auto;
+  width: min(100%, 760px);
+  margin: 0 auto;
   padding: 14px;
 }
-.preview-wrap {
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 17px;
+  padding: 15px;
+  margin-bottom: 13px;
+  min-width: 0;
+}
+.panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.panel-head h2 { margin: 0; }
+.video-wrap {
   position: relative;
   overflow: hidden;
-  border: 1px solid var(--line);
-  border-radius: 18px;
+  border-radius: 13px;
   background: #000;
   aspect-ratio: 4 / 3;
-  display:flex;
-  align-items:center;
-  justify-content:center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-#cameraPreview {
-  display:block;
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  background:#000;
+video#cameraPreview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: #000;
 }
-.preview-placeholder {
-  position:absolute;
-  inset:0;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  text-align:center;
-  padding:25px;
-  color:var(--muted);
-  pointer-events:none;
+.camera-placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  color: var(--muted);
+  text-align: center;
+  padding: 20px;
+  pointer-events: none;
 }
-.preview-placeholder strong {
-  display:block;
-  color:var(--text);
-  font-size:18px;
-  margin-bottom:8px;
-}
-.preview-label {
-  position:absolute;
-  top:12px;
-  left:12px;
-  border-radius:7px;
-  padding:6px 9px;
-  font-size:11px;
-  font-weight:800;
-  letter-spacing:.6px;
-  background:#0009;
-}
-#recIndicator {
-  position:absolute;
-  top:12px;
-  right:12px;
-  border-radius:7px;
-  padding:6px 9px;
-  font-size:11px;
-  font-weight:800;
-  background:#0009;
-  display:none;
-}
-#recIndicator.active { display:block; color:#ff7582; }
-#recIndicator.active::before { content:"● "; }
-.camera-actions {
-  display:grid;
-  grid-template-columns:1fr 1fr 1fr;
-  gap:8px;
-  margin-top:10px;
-}
-.section {
-  background:var(--panel);
-  border:1px solid var(--line);
-  border-radius:16px;
-  padding:15px;
-  margin-top:13px;
-}
-.section-heading {
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:10px;
-  margin-bottom:14px;
-}
-.section-heading h2 { font-size:15px; margin:0; }
-.section-heading small { color:var(--muted); }
-.control { margin:14px 0; }
-.control-top {
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:12px;
-  margin-bottom:9px;
-}
-.control label { font-size:13px; font-weight:650; }
-.value {
-  color:var(--accent);
-  font-size:12px;
-  font-variant-numeric:tabular-nums;
-}
-input[type=range] {
-  width:100%;
-  accent-color:var(--accent);
-  display:block;
-  margin:0;
+.camera-placeholder .symbol { font-size: 42px; }
+.meter-row {
+  display: grid;
+  grid-template-columns: 55px 1fr;
+  gap: 10px;
+  align-items: center;
+  margin-top: 12px;
 }
 .meter {
-  height:5px;
-  background:#293043;
-  border-radius:99px;
-  overflow:hidden;
-  margin-top:8px;
+  height: 9px;
+  border-radius: 99px;
+  background: #252c3b;
+  overflow: hidden;
 }
 .meter-fill {
-  height:100%;
-  width:0;
-  background:var(--green);
-  transition:width .08s linear;
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--accent2), #f4db72, var(--danger));
+  transition: width .08s linear;
 }
-.grid-two {
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:12px;
+.small { font-size: 12px; color: var(--muted); line-height: 1.45; }
+.controls-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 9px;
+  margin-top: 12px;
 }
-.effect-row {
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:12px;
+.field { min-width: 0; margin-bottom: 15px; }
+.field:last-child { margin-bottom: 0; }
+.field-label {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: baseline;
+  margin-bottom: 6px;
+  font-size: 13px;
+  font-weight: 650;
 }
-.effect-row label { font-size:13px; font-weight:650; }
-.effect-row input { width:100%; margin-top:9px; }
-.effect-card {
-  background:#191f2d;
-  border:1px solid #2b3345;
-  border-radius:12px;
-  padding:12px;
-  min-width:0;
+.value { color: var(--accent2); font-variant-numeric: tabular-nums; }
+.range-hints {
+  display: flex;
+  justify-content: space-between;
+  color: var(--muted);
+  font-size: 10px;
+  margin-top: 1px;
 }
-select, input[type=text] {
-  width:100%;
-  border:1px solid var(--line);
-  border-radius:10px;
-  padding:11px;
-  color:var(--text);
-  background:var(--panel2);
+.section-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 16px 0;
 }
-details summary {
-  cursor:pointer;
-  font-size:14px;
-  font-weight:750;
-  list-style:none;
+.eq-row {
+  display: grid;
+  grid-template-columns: 58px minmax(0, 1fr) 44px;
+  gap: 8px;
+  align-items: center;
+  margin: 11px 0;
 }
-details summary::-webkit-details-marker { display:none; }
-details summary::after { content:"＋"; float:right; color:var(--accent); }
-details[open] summary::after { content:"−"; }
-details .details-body { padding-top:13px; }
-#message {
-  display:none;
-  white-space:pre-wrap;
-  margin-top:12px;
-  padding:12px;
-  border:1px solid #69404a;
-  background:#28171d;
-  color:#ffb6bf;
-  border-radius:12px;
-  font-size:13px;
-  line-height:1.45;
+.eq-name { font-size: 12px; font-weight: 700; }
+.eq-number { text-align: right; color: var(--accent2); font-size: 11px; }
+.two-col {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
 }
-#message.show { display:block; }
-#result { display:none; }
-#result.show { display:block; }
-#recordedVideo {
-  width:100%;
-  max-height:55vh;
-  background:#000;
-  border-radius:12px;
+.effect-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
 }
-#downloadLink {
-  display:block;
-  text-decoration:none;
-  text-align:center;
-  margin-top:10px;
+.effect-control {
+  background: #0d111a;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 11px;
+  min-width: 0;
 }
-#library {
-  display:flex;
-  flex-direction:column;
-  gap:8px;
-  margin-top:12px;
+.effect-control .field { margin-bottom: 0; }
+.effect-control button { width: 100%; margin-bottom: 10px; }
+.warning {
+  border: 1px solid #594d2c;
+  background: #241f12;
+  color: #f4d990;
+  padding: 11px;
+  border-radius: 11px;
+  font-size: 12px;
+  line-height: 1.45;
 }
-.library-item {
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:8px;
-  background:#191f2d;
-  border-radius:10px;
-  padding:10px;
+.result-video {
+  width: 100%;
+  border-radius: 12px;
+  background: #000;
+  max-height: 440px;
 }
-.library-item .file-title {
-  font-size:13px;
-  font-weight:650;
-  overflow-wrap:anywhere;
+.recording-card {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px;
+  margin-top: 10px;
+  overflow-wrap: anywhere;
 }
-.library-item .file-meta {
-  font-size:11px;
-  color:var(--muted);
-  margin-top:4px;
+.recording-title { font-size: 13px; font-weight: 750; margin-bottom: 5px; }
+.recording-meta { color: var(--muted); font-size: 11px; margin-bottom: 10px; }
+.recording-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.recording-actions button { flex: 1; }
+#toast {
+  position: fixed;
+  z-index: 20;
+  bottom: calc(18px + env(safe-area-inset-bottom));
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: calc(100% - 28px);
+  background: #252d3d;
+  color: white;
+  border: 1px solid #46536a;
+  border-radius: 12px;
+  padding: 11px 15px;
+  font-size: 13px;
+  box-shadow: 0 8px 28px #0008;
+  display: none;
 }
-.library-item button { padding:8px 10px; font-size:12px; }
-.note { color:var(--muted); font-size:12px; line-height:1.5; }
-.eq-description { margin:10px 0; }
-.eq-band { margin:17px 0; }
-.eq-band input { margin-top:8px; }
+.hidden { display: none !important; }
 footer {
-  text-align:center;
-  padding:20px 10px 28px;
-  color:#667187;
-  font-size:11px;
+  text-align: center;
+  padding: 10px 20px 20px;
+  color: var(--muted);
+  font-size: 11px;
 }
-@media (max-width:390px) {
-  main { padding:10px; }
-  .section { padding:12px; }
-  .camera-actions button { padding:11px 5px; font-size:12px; }
-  .grid-two { gap:8px; }
+@media (max-width: 370px) {
+  main { padding: 10px; }
+  .panel { padding: 12px; }
+  .header-buttons { gap: 5px; }
+  button { padding: 9px; font-size: 12px; }
+  .two-col { grid-template-columns: 1fr; }
 }
 </style>
 </head>
 
 <body>
 <header>
-  <div class="header-row">
+  <div class="header-title">
     <div>
-      <div class="brand">Vocal<span>Cam</span></div>
-      <div class="status">
-        <span class="status-dot" id="statusDot"></span>
-        <span id="statusText">Studio ready</span>
-      </div>
+      <h1>🎙️ VocalCam Studio</h1>
+      <div class="subtitle">Camera · Vocal processing · Recording</div>
     </div>
-    <button id="darkToggle" class="subtle" type="button">Studio</button>
+    <div id="statusBadge" class="status">READY</div>
+  </div>
+  <div class="header-buttons">
+    <button id="startCameraBtn" class="primary">Start Camera</button>
+    <button id="recordBtn" class="record" disabled>● Record</button>
+    <button id="flipBtn" disabled>Flip Camera</button>
   </div>
 </header>
 
 <main>
-  <div class="preview-wrap">
-    <video id="cameraPreview" autoplay playsinline muted></video>
-    <div class="preview-placeholder" id="placeholder">
-      <div>
-        <strong>Your studio starts here</strong>
-        Tap Start Camera to enable your camera and microphone.
+  <section class="panel">
+    <div class="panel-head">
+      <h2>Camera Preview</h2>
+      <span id="timer" class="value">00:00</span>
+    </div>
+    <div class="video-wrap">
+      <video id="cameraPreview" autoplay playsinline muted></video>
+      <div id="cameraPlaceholder" class="camera-placeholder">
+        <div class="symbol">📹</div>
+        <strong>Your camera preview appears here</strong>
+        <span class="small">Tap Start Camera and allow camera and microphone access.</span>
       </div>
     </div>
-    <div class="preview-label">LIVE PREVIEW</div>
-    <div id="recIndicator">RECORDING</div>
-  </div>
+    <div class="meter-row">
+      <span class="small">Mic level</span>
+      <div class="meter"><div id="meterFill" class="meter-fill"></div></div>
+    </div>
+    <div class="controls-grid">
+      <button id="stopCameraBtn" disabled>Stop Camera</button>
+      <button id="resetSettingsBtn">Reset Audio Settings</button>
+    </div>
+    <p class="small" style="margin-bottom:0">
+      The preview is muted to prevent feedback. Your processed microphone audio is sent to the recording, not played back live through your speakers.
+    </p>
+  </section>
 
-  <div class="camera-actions">
-    <button class="primary" id="cameraBtn" type="button">Start Camera</button>
-    <button class="record" id="recordBtn" type="button" disabled>● Record</button>
-    <button id="flipBtn" type="button" disabled>Flip Camera</button>
-  </div>
-
-  <div id="message" role="status"></div>
-
-  <section class="section">
-    <div class="section-heading">
+  <section class="panel">
+    <div class="panel-head">
       <h2>Studio Input Console</h2>
-      <small>Live audio</small>
+      <span class="status">AUDIO</span>
     </div>
 
-    <div class="control">
-      <div class="control-top">
+    <div class="field">
+      <div class="field-label">
         <label for="gain">Input Gain</label>
-        <span class="value" id="gainValue">100%</span>
+        <span id="gainValue" class="value">100%</span>
       </div>
-      <input id="gain" type="range" min="0" max="200" value="100" step="1">
-      <div class="meter"><div class="meter-fill" id="gainMeter"></div></div>
+      <input id="gain" type="range" min="0" max="200" step="5" value="100">
+      <div class="range-hints"><span>0%</span><span>Boost microphone signal</span><span>200%</span></div>
     </div>
 
-    <div class="control">
-      <div class="control-top">
-        <label for="compression">Compression</label>
-        <span class="value" id="compressionValue">25%</span>
+    <div class="field">
+      <div class="field-label">
+        <label for="compression">Vocal Compression</label>
+        <span id="compressionValue" class="value">65%</span>
       </div>
-      <input id="compression" type="range" min="0" max="100" value="25" step="1">
+      <input id="compression" type="range" min="0" max="100" step="1" value="65">
+      <div class="range-hints"><span>Natural</span><span>More even vocal level</span><span>Strong</span></div>
     </div>
 
-    <div class="grid-two">
-      <div class="effect-card">
-        <div class="effect-row"><label for="eqMode">Equalizer Mode</label></div>
+    <div class="field">
+      <div class="field-label">
+        <label for="masterOutput">Master Output</label>
+        <span id="masterOutputValue" class="value">150%</span>
+      </div>
+      <input id="masterOutput" type="range" min="100" max="200" step="5" value="150">
+      <div class="range-hints"><span>100%</span><span>Boost final recorded level</span><span>200%</span></div>
+    </div>
+
+    <div class="warning">
+      Higher input gain and master output can make the recording louder, but too much can distort your voice. Start with Master Output at 150%; lower Input Gain if your voice sounds crunchy or harsh.
+    </div>
+
+    <div class="section-divider"></div>
+
+    <div class="two-col">
+      <div class="field">
+        <div class="field-label"><label for="eqMode">EQ Mode</label></div>
         <select id="eqMode">
           <option value="generic">Generic EQ</option>
           <option value="advanced">Advanced EQ</option>
         </select>
       </div>
-      <div class="effect-card">
-        <div class="effect-row"><label for="quality">Video Quality</label></div>
+      <div class="field">
+        <div class="field-label"><label for="quality">Recording Quality</label></div>
         <select id="quality">
-          <option value="720">HD 720p</option>
-          <option value="1080">Full HD 1080p</option>
-          <option value="480">SD 480p</option>
+          <option value="standard">Standard</option>
+          <option value="high" selected>High Quality</option>
+          <option value="maximum">Maximum Quality</option>
         </select>
       </div>
     </div>
+  </section>
 
-    <div id="genericEQ" class="section" style="margin-top:12px">
-      <div class="section-heading">
-        <h2>Generic EQ</h2>
-        <small>Quick tone shaping</small>
-      </div>
-      <label for="genericTone" class="note">Choose a starting tone</label>
-      <select id="genericTone" style="margin-top:8px">
+  <section id="genericEqPanel" class="panel">
+    <div class="panel-head">
+      <h2>Generic EQ</h2>
+    </div>
+    <div class="field">
+      <div class="field-label"><label for="eqPreset">EQ Preset</label></div>
+      <select id="eqPreset">
         <option value="flat">Flat / Neutral</option>
-        <option value="warm">Warm</option>
-        <option value="presence">Vocal Presence</option>
-        <option value="bright">Bright</option>
-        <option value="dark">Dark / Smooth</option>
+        <option value="warm">Warm Vocal</option>
+        <option value="presence" selected>Vocal Presence</option>
+        <option value="bright">Bright / Airy</option>
+        <option value="smooth">Dark / Smooth</option>
       </select>
-      <p class="note eq-description" id="genericDescription">
-        Neutral tone with no additional EQ boost or cut.
-      </p>
     </div>
-
-    <div id="advancedEQ" class="section" style="display:none;margin-top:12px">
-      <div class="section-heading">
-        <h2>Advanced EQ</h2>
-        <button id="resetEQ" type="button">Reset</button>
-      </div>
-      <p class="note">Five adjustable frequency bands. Each band ranges from −12 dB to +12 dB.</p>
-
-      <div class="eq-band">
-        <div class="control-top">
-          <label for="eqLow">Low · 100 Hz</label>
-          <span class="value" id="eqLowValue">0 dB</span>
-        </div>
-        <input id="eqLow" type="range" min="-12" max="12" value="0" step="1">
-      </div>
-
-      <div class="eq-band">
-        <div class="control-top">
-          <label for="eqLowMid">Low-Mid · 300 Hz</label>
-          <span class="value" id="eqLowMidValue">0 dB</span>
-        </div>
-        <input id="eqLowMid" type="range" min="-12" max="12" value="0" step="1">
-      </div>
-
-      <div class="eq-band">
-        <div class="control-top">
-          <label for="eqMid">Mid · 1 kHz</label>
-          <span class="value" id="eqMidValue">0 dB</span>
-        </div>
-        <input id="eqMid" type="range" min="-12" max="12" value="0" step="1">
-      </div>
-
-      <div class="eq-band">
-        <div class="control-top">
-          <label for="eqHighMid">High-Mid · 3 kHz</label>
-          <span class="value" id="eqHighMidValue">0 dB</span>
-        </div>
-        <input id="eqHighMid" type="range" min="-12" max="12" value="0" step="1">
-      </div>
-
-      <div class="eq-band">
-        <div class="control-top">
-          <label for="eqHigh">High · 8 kHz</label>
-          <span class="value" id="eqHighValue">0 dB</span>
-        </div>
-        <input id="eqHigh" type="range" min="-12" max="12" value="0" step="1">
-      </div>
-    </div>
-
-    <p class="note">
-      Headphones are recommended when monitoring effects to avoid feedback.
-      The EQ and effects process the microphone audio included in your recording.
-    </p>
+    <p id="presetDescription" class="small">Adds clarity and presence to vocals without making them too sharp.</p>
   </section>
 
-  <section class="section">
-    <div class="section-heading">
+  <section id="advancedEqPanel" class="panel hidden">
+    <div class="panel-head">
+      <h2>Advanced EQ</h2>
+      <button id="flatEqBtn">Reset EQ</button>
+    </div>
+    <p class="small">Adjust five frequency bands. Positive values boost a frequency; negative values reduce it.</p>
+    <div id="advancedEqControls"></div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-head">
       <h2>Quick Effects</h2>
-      <button id="offBtn" type="button">Effects Off</button>
     </div>
 
-    <div class="grid-two">
-      <div class="effect-card">
-        <div class="effect-row">
-          <label for="reverb">Reverb</label>
-          <span class="value" id="reverbValue">15%</span>
-        </div>
-        <input id="reverb" type="range" min="0" max="100" value="15">
-      </div>
-
-      <div class="effect-card">
-        <div class="effect-row">
-          <label for="delay">Delay</label>
-          <span class="value" id="delayValue">0%</span>
-        </div>
-        <input id="delay" type="range" min="0" max="100" value="0">
-      </div>
-
-      <div class="effect-card">
-        <div class="effect-row">
-          <label for="distortion">Distortion</label>
-          <span class="value" id="distortionValue">0%</span>
-        </div>
-        <input id="distortion" type="range" min="0" max="100" value="0">
-      </div>
-
-      <div class="effect-card">
-        <div class="effect-row">
-          <label for="delayTime">Delay Time</label>
-          <span class="value" id="delayTimeValue">280 ms</span>
-        </div>
-        <input id="delayTime" type="range" min="80" max="700" value="280" step="10">
-      </div>
-    </div>
-  </section>
-
-  <section class="section">
-    <details>
-      <summary>Recording Settings</summary>
-      <div class="details-body">
-        <div class="control">
-          <div class="control-top">
-            <label for="projectName">Recording Name</label>
+    <div class="effect-grid">
+      <div class="effect-control">
+        <button id="reverbToggle">Reverb: OFF</button>
+        <div class="field">
+          <div class="field-label">
+            <label for="reverbAmount">Reverb Mix</label>
+            <span id="reverbAmountValue" class="value">20%</span>
           </div>
-          <input id="projectName" type="text" maxlength="80" placeholder="My VocalCam recording">
+          <input id="reverbAmount" type="range" min="0" max="60" value="20">
         </div>
-        <p class="note">
-          Recording format depends on your browser and device. Processed microphone
-          audio is combined with video when supported.
-        </p>
       </div>
-    </details>
+
+      <div class="effect-control">
+        <button id="delayToggle">Delay: OFF</button>
+        <div class="field">
+          <div class="field-label">
+            <label for="delayAmount">Delay Mix</label>
+            <span id="delayAmountValue" class="value">15%</span>
+          </div>
+          <input id="delayAmount" type="range" min="0" max="50" value="15">
+        </div>
+      </div>
+
+      <div class="effect-control">
+        <button id="distortionToggle">Distortion: OFF</button>
+        <div class="field">
+          <div class="field-label">
+            <label for="distortionAmount">Drive</label>
+            <span id="distortionAmountValue" class="value">15%</span>
+          </div>
+          <input id="distortionAmount" type="range" min="0" max="100" value="15">
+        </div>
+      </div>
+
+      <div class="effect-control">
+        <div class="field">
+          <div class="field-label">
+            <label for="delayTime">Delay Time</label>
+            <span id="delayTimeValue" class="value">280 ms</span>
+          </div>
+          <input id="delayTime" type="range" min="80" max="700" step="10" value="280">
+        </div>
+        <p class="small" style="margin-bottom:0">Longer times create more separated echoes.</p>
+      </div>
+    </div>
   </section>
 
-  <section class="section" id="result">
-    <div class="section-heading">
+  <section class="panel">
+    <div class="panel-head">
+      <h2>Recording Settings</h2>
+    </div>
+    <div class="field">
+      <div class="field-label"><label for="projectName">Recording Name</label></div>
+      <input id="projectName" type="text" maxlength="80" placeholder="My Vocal Performance">
+    </div>
+    <p class="small">Recordings include the camera video and the processed audio from your studio settings.</p>
+  </section>
+
+  <section id="latestPanel" class="panel hidden">
+    <div class="panel-head">
       <h2>Latest Recording</h2>
-      <button id="closeResultBtn" type="button">Close</button>
     </div>
-    <video id="recordedVideo" controls playsinline></video>
-    <a id="downloadLink" class="primary full" href="#" download="vocalcam-recording.webm">Download Recording</a>
-    <p class="note" id="fileInfo"></p>
+    <video id="latestVideo" class="result-video" controls playsinline></video>
+    <div class="recording-actions" style="margin-top:10px">
+      <a id="downloadLatest" href="#" download="vocalcam-recording.webm" style="flex:1;text-decoration:none">
+        <button class="primary" style="width:100%">Download Recording</button>
+      </a>
+    </div>
+    <p id="latestInfo" class="small"></p>
   </section>
 
-  <section class="section">
-    <div class="section-heading">
+  <section class="panel">
+    <div class="panel-head">
       <h2>Recording Library</h2>
-      <button id="refreshLibrary" type="button">Refresh</button>
+      <button id="refreshLibraryBtn">Refresh</button>
     </div>
-    <p class="note">
-      Recordings are stored in this browser on this device. Download important
-      recordings to keep a separate copy.
-    </p>
-    <div id="library"><div class="note">Loading recordings…</div></div>
+    <p class="small">Recordings are stored in this browser on this device. Download important recordings for safekeeping.</p>
+    <div id="libraryList">
+      <p class="small">Your saved recordings will appear here.</p>
+    </div>
   </section>
-
-  <footer>VOCALCAM STUDIO · Runs in your browser</footer>
 </main>
 
+<footer>VocalCam Studio · Your performance, your sound.</footer>
+<div id="toast" role="status"></div>
+
 <script>
-(function () {
+(() => {
   "use strict";
 
   const $ = id => document.getElementById(id);
 
   const els = {
-    preview: $("cameraPreview"),
-    placeholder: $("placeholder"),
-    cameraBtn: $("cameraBtn"),
+    statusBadge: $("statusBadge"),
+    startCameraBtn: $("startCameraBtn"),
     recordBtn: $("recordBtn"),
     flipBtn: $("flipBtn"),
-    statusDot: $("statusDot"),
-    statusText: $("statusText"),
-    recIndicator: $("recIndicator"),
-    message: $("message"),
+    stopCameraBtn: $("stopCameraBtn"),
+    resetSettingsBtn: $("resetSettingsBtn"),
+    cameraPreview: $("cameraPreview"),
+    cameraPlaceholder: $("cameraPlaceholder"),
+    timer: $("timer"),
+    meterFill: $("meterFill"),
+
     gain: $("gain"),
+    gainValue: $("gainValue"),
     compression: $("compression"),
-    reverb: $("reverb"),
-    delay: $("delay"),
-    distortion: $("distortion"),
+    compressionValue: $("compressionValue"),
+    masterOutput: $("masterOutput"),
+    masterOutputValue: $("masterOutputValue"),
+
     eqMode: $("eqMode"),
-    genericTone: $("genericTone"),
     quality: $("quality"),
+    eqPreset: $("eqPreset"),
+    presetDescription: $("presetDescription"),
+    genericEqPanel: $("genericEqPanel"),
+    advancedEqPanel: $("advancedEqPanel"),
+    advancedEqControls: $("advancedEqControls"),
+    flatEqBtn: $("flatEqBtn"),
+
+    reverbToggle: $("reverbToggle"),
+    reverbAmount: $("reverbAmount"),
+    reverbAmountValue: $("reverbAmountValue"),
+    delayToggle: $("delayToggle"),
+    delayAmount: $("delayAmount"),
+    delayAmountValue: $("delayAmountValue"),
     delayTime: $("delayTime"),
+    delayTimeValue: $("delayTimeValue"),
+    distortionToggle: $("distortionToggle"),
+    distortionAmount: $("distortionAmount"),
+    distortionAmountValue: $("distortionAmountValue"),
+
     projectName: $("projectName"),
-    result: $("result"),
-    recordedVideo: $("recordedVideo"),
-    downloadLink: $("downloadLink"),
-    fileInfo: $("fileInfo"),
-    library: $("library")
+    latestPanel: $("latestPanel"),
+    latestVideo: $("latestVideo"),
+    downloadLatest: $("downloadLatest"),
+    latestInfo: $("latestInfo"),
+    libraryList: $("libraryList"),
+    refreshLibraryBtn: $("refreshLibraryBtn"),
+    toast: $("toast")
   };
 
   let cameraStream = null;
   let audioContext = null;
   let micSource = null;
   let gainNode = null;
-  let compressorNode = null;
+  let vocalCompressor = null;
   let waveshaper = null;
+  let eqFilters = [];
   let dryGain = null;
   let convolver = null;
   let reverbGain = null;
   let delayNode = null;
   let delayFeedback = null;
   let delayGain = null;
+  let masterGain = null;
+  let outputLimiter = null;
   let audioDestination = null;
   let analyser = null;
-  let eqNodes = [];
-
   let meterAnimation = null;
+
   let recorder = null;
-  let recordingChunks = [];
+  let recordedChunks = [];
   let recordingStartedAt = 0;
-  let latestUrl = null;
-  let facingMode = "user";
+  let timerInterval = null;
   let isRecording = false;
-  let dbPromise = null;
+  let facingMode = "user";
+  let reverbOn = false;
+  let delayOn = false;
+  let distortionOn = false;
+  let latestBlobUrl = null;
+  let toastTimeout = null;
+  let db = null;
 
-  const EQ_IDS = ["eqLow", "eqLowMid", "eqMid", "eqHighMid", "eqHigh"];
-  const EQ_FREQUENCIES = [100, 300, 1000, 3000, 8000];
+  const DB_NAME = "VocalCamStudioDB";
+  const DB_VERSION = 1;
+  const STORE_NAME = "recordings";
 
-  const EQ_PRESETS = {
+  const eqBands = [
+    { freq: 100, label: "100 Hz", type: "lowshelf" },
+    { freq: 300, label: "300 Hz", type: "peaking" },
+    { freq: 1000, label: "1 kHz", type: "peaking" },
+    { freq: 3000, label: "3 kHz", type: "peaking" },
+    { freq: 8000, label: "8 kHz", type: "highshelf" }
+  ];
+
+  const presets = {
     flat: {
       gains: [0, 0, 0, 0, 0],
-      description: "Neutral tone with no additional EQ boost or cut."
+      description: "A neutral starting point with no intentional EQ boost or cut."
     },
     warm: {
-      gains: [3, 2, -1, 0, -2],
-      description: "Adds warmth to the low end and softens the top end."
+      gains: [2, 2, -1, -1, -2],
+      description: "Adds body and warmth while gently softening upper frequencies."
     },
     presence: {
-      gains: [-1, -1, 1, 4, 1],
-      description: "Emphasizes vocal clarity and intelligibility."
+      gains: [-1, -1, 1, 3, 1],
+      description: "Adds clarity and presence to vocals without making them too sharp."
     },
     bright: {
-      gains: [-1, 0, 0, 2, 4],
-      description: "Adds brightness and extra high-frequency detail."
+      gains: [-2, -1, 1, 2, 4],
+      description: "Adds upper-frequency sparkle and articulation."
     },
-    dark: {
+    smooth: {
       gains: [1, 1, 0, -2, -3],
-      description: "Softens the upper frequencies for a smoother tone."
+      description: "A softer, rounder tone with less upper-frequency edge."
     }
   };
 
-  function showMessage(message) {
-    els.message.textContent = message;
-    els.message.classList.add("show");
+  function toast(message, duration = 2800) {
+    els.toast.textContent = message;
+    els.toast.style.display = "block";
+    clearTimeout(toastTimeout);
+    toastTimeout = setTimeout(() => {
+      els.toast.style.display = "none";
+    }, duration);
   }
 
-  function clearMessage() {
-    els.message.textContent = "";
-    els.message.classList.remove("show");
+  function setStatus(text) {
+    els.statusBadge.textContent = text;
   }
 
-  function setStatus(message, active) {
-    els.statusText.textContent = message;
-    els.statusDot.classList.toggle("on", !!active);
+  function formatTime(seconds) {
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return String(mins).padStart(2, "0") + ":" +
+           String(secs).padStart(2, "0");
   }
 
-  function formatBytes(bytes) {
-    if (!Number.isFinite(bytes)) return "";
-    if (bytes < 1024 * 1024) return Math.round(bytes / 1024) + " KB";
-    return (bytes / (1024 * 1024)).toFixed(1) + " MB";
+  function safeName(name) {
+    return (name || "VocalCam Recording")
+      .trim()
+      .replace(/[\\/:*?"<>|]+/g, "-")
+      .slice(0, 80) || "VocalCam Recording";
   }
 
   function makeDistortionCurve(amount) {
     const samples = 44100;
     const curve = new Float32Array(samples);
-    const k = amount * 350;
+    const drive = Math.max(0, amount) * 3.5;
 
     for (let i = 0; i < samples; i++) {
       const x = (i * 2) / samples - 1;
-      curve[i] = k === 0
+      curve[i] = drive === 0
         ? x
-        : ((3 + k) * x * 20 * (Math.PI / 180)) /
-          (Math.PI + k * Math.abs(x));
+        : ((3 + drive) * x * 20 * Math.PI / 180) /
+          (Math.PI + drive * Math.abs(x));
     }
-
     return curve;
   }
 
-  function makeImpulse(context, seconds, decay) {
-    const rate = context.sampleRate;
+  function makeImpulseResponse(ctx, seconds = 2.2, decay = 2.4) {
+    const rate = ctx.sampleRate;
     const length = Math.floor(rate * seconds);
-    const buffer = context.createBuffer(2, length, rate);
+    const impulse = ctx.createBuffer(2, length, rate);
 
     for (let channel = 0; channel < 2; channel++) {
-      const data = buffer.getChannelData(channel);
+      const data = impulse.getChannelData(channel);
       for (let i = 0; i < length; i++) {
-        data[i] = (Math.random() * 2 - 1) *
-          Math.pow(1 - i / length, decay);
+        const fade = Math.pow(1 - i / length, decay);
+        data[i] = (Math.random() * 2 - 1) * fade;
       }
     }
+    return impulse;
+  }
 
-    return buffer;
+  function createAdvancedEqControls() {
+    els.advancedEqControls.innerHTML = "";
+
+    eqBands.forEach((band, index) => {
+      const row = document.createElement("div");
+      row.className = "eq-row";
+
+      const label = document.createElement("div");
+      label.className = "eq-name";
+      label.textContent = band.label;
+
+      const slider = document.createElement("input");
+      slider.type = "range";
+      slider.min = "-12";
+      slider.max = "12";
+      slider.step = "1";
+      slider.value = presets.presence.gains[index];
+      slider.id = "eqBand" + index;
+      slider.setAttribute("aria-label", band.label + " EQ");
+
+      const number = document.createElement("div");
+      number.className = "eq-number";
+      number.id = "eqBandValue" + index;
+      number.textContent = Number(slider.value) > 0
+        ? "+" + slider.value + " dB"
+        : slider.value + " dB";
+
+      slider.addEventListener("input", () => {
+        number.textContent = Number(slider.value) > 0
+          ? "+" + slider.value + " dB"
+          : slider.value + " dB";
+        if (eqFilters[index]) {
+          eqFilters[index].gain.setTargetAtTime(
+            Number(slider.value),
+            audioContext ? audioContext.currentTime : 0,
+            0.025
+          );
+        }
+      });
+
+      row.append(label, slider, number);
+      els.advancedEqControls.appendChild(row);
+    });
+  }
+
+  function getEqValues() {
+    if (els.eqMode.value === "advanced") {
+      return eqBands.map((_, i) => Number($("eqBand" + i).value));
+    }
+    return presets[els.eqPreset.value].gains;
+  }
+
+  function applyEq() {
+    const values = getEqValues();
+    eqFilters.forEach((filter, i) => {
+      if (filter) {
+        filter.gain.setTargetAtTime(
+          values[i],
+          audioContext.currentTime,
+          0.03
+        );
+      }
+    });
+  }
+
+  function updatePresetDescription() {
+    els.presetDescription.textContent =
+      presets[els.eqPreset.value].description;
+  }
+
+  function updateEqMode() {
+    const advanced = els.eqMode.value === "advanced";
+    els.advancedEqPanel.classList.toggle("hidden", !advanced);
+    els.genericEqPanel.classList.toggle("hidden", advanced);
+    applyEqIfReady();
+  }
+
+  function applyEqIfReady() {
+    if (audioContext && eqFilters.length) applyEq();
+  }
+
+  function updateCompression() {
+    els.compressionValue.textContent = els.compression.value + "%";
+    if (!vocalCompressor || !audioContext) return;
+
+    const amount = Number(els.compression.value);
+    vocalCompressor.ratio.setTargetAtTime(
+      2 + amount * 0.14,
+      audioContext.currentTime,
+      0.03
+    );
+    vocalCompressor.threshold.setTargetAtTime(
+      -12 - amount * 0.18,
+      audioContext.currentTime,
+      0.03
+    );
+    vocalCompressor.knee.setTargetAtTime(
+      Math.max(2, 18 - amount * 0.14),
+      audioContext.currentTime,
+      0.03
+    );
+  }
+
+  function updateInputGain() {
+    els.gainValue.textContent = els.gain.value + "%";
+    if (gainNode && audioContext) {
+      gainNode.gain.setTargetAtTime(
+        Number(els.gain.value) / 100,
+        audioContext.currentTime,
+        0.03
+      );
+    }
+  }
+
+  function updateMasterOutput() {
+    els.masterOutputValue.textContent = els.masterOutput.value + "%";
+    if (masterGain && audioContext) {
+      masterGain.gain.setTargetAtTime(
+        Number(els.masterOutput.value) / 100,
+        audioContext.currentTime,
+        0.03
+      );
+    }
+  }
+
+  function updateDistortion() {
+    els.distortionAmountValue.textContent = els.distortionAmount.value + "%";
+    if (waveshaper) {
+      waveshaper.curve = distortionOn
+        ? makeDistortionCurve(Number(els.distortionAmount.value) / 100)
+        : makeDistortionCurve(0);
+    }
+  }
+
+  function updateReverb() {
+    els.reverbAmountValue.textContent = els.reverbAmount.value + "%";
+    if (reverbGain && audioContext) {
+      reverbGain.gain.setTargetAtTime(
+        reverbOn ? Number(els.reverbAmount.value) / 100 : 0,
+        audioContext.currentTime,
+        0.03
+      );
+    }
+    els.reverbToggle.textContent = "Reverb: " + (reverbOn ? "ON" : "OFF");
+    els.reverbToggle.classList.toggle("active", reverbOn);
+  }
+
+  function updateDelay() {
+    els.delayAmountValue.textContent = els.delayAmount.value + "%";
+    els.delayTimeValue.textContent = els.delayTime.value + " ms";
+
+    if (delayGain && audioContext) {
+      delayGain.gain.setTargetAtTime(
+        delayOn ? Number(els.delayAmount.value) / 100 : 0,
+        audioContext.currentTime,
+        0.03
+      );
+      delayNode.delayTime.setTargetAtTime(
+        Number(els.delayTime.value) / 1000,
+        audioContext.currentTime,
+        0.03
+      );
+      delayFeedback.gain.setTargetAtTime(
+        delayOn ? 0.18 : 0,
+        audioContext.currentTime,
+        0.03
+      );
+    }
+
+    els.delayToggle.textContent = "Delay: " + (delayOn ? "ON" : "OFF");
+    els.delayToggle.classList.toggle("active", delayOn);
   }
 
   async function buildAudioGraph(stream) {
-    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    await disposeAudioGraph();
+
+    const AudioContextClass =
+      window.AudioContext || window.webkitAudioContext;
+
     if (!AudioContextClass) {
       throw new Error("This browser does not support Web Audio.");
     }
 
-    audioContext = new AudioContextClass();
-    if (audioContext.state === "suspended") await audioContext.resume();
+    try {
+      audioContext = new AudioContextClass({ latencyHint: "playback" });
+    } catch {
+      audioContext = new AudioContextClass();
+    }
+
+    if (audioContext.state === "suspended") {
+      await audioContext.resume();
+    }
 
     micSource = audioContext.createMediaStreamSource(stream);
-    gainNode = audioContext.createGain();
-    compressorNode = audioContext.createDynamicsCompressor();
-    waveshaper = audioContext.createWaveShaper();
 
-    eqNodes = EQ_FREQUENCIES.map(frequency => {
+    gainNode = audioContext.createGain();
+    gainNode.gain.value = Number(els.gain.value) / 100;
+
+    vocalCompressor = audioContext.createDynamicsCompressor();
+    vocalCompressor.threshold.value = -23;
+    vocalCompressor.knee.value = 9;
+    vocalCompressor.ratio.value = 11;
+    vocalCompressor.attack.value = 0.004;
+    vocalCompressor.release.value = 0.16;
+
+    waveshaper = audioContext.createWaveShaper();
+    waveshaper.oversample = "4x";
+    waveshaper.curve = makeDistortionCurve(
+      distortionOn ? Number(els.distortionAmount.value) / 100 : 0
+    );
+
+    eqFilters = eqBands.map(band => {
       const filter = audioContext.createBiquadFilter();
-      filter.type = "peaking";
-      filter.frequency.value = frequency;
-      filter.Q.value = 1;
-      filter.gain.value = 0;
+      filter.type = band.type;
+      filter.frequency.value = band.freq;
+      filter.Q.value = 0.8;
       return filter;
     });
 
     dryGain = audioContext.createGain();
-    convolver = audioContext.createConvolver();
-    reverbGain = audioContext.createGain();
-    delayNode = audioContext.createDelay(1.5);
-    delayFeedback = audioContext.createGain();
-    delayGain = audioContext.createGain();
-    audioDestination = audioContext.createMediaStreamDestination();
-    analyser = audioContext.createAnalyser();
-
-    analyser.fftSize = 256;
-
-    gainNode.gain.value = Number(els.gain.value) / 100;
-
-    compressorNode.threshold.value = -18;
-    compressorNode.knee.value = 20;
-    compressorNode.ratio.value = 1 + Number(els.compression.value) / 10;
-    compressorNode.attack.value = 0.006;
-    compressorNode.release.value = 0.18;
-
-    waveshaper.curve = makeDistortionCurve(0);
-    waveshaper.oversample = "4x";
-
     dryGain.gain.value = 1;
-    convolver.buffer = makeImpulse(audioContext, 2.5, 2.5);
-    reverbGain.gain.value = Number(els.reverb.value) / 100 * 0.7;
 
+    convolver = audioContext.createConvolver();
+    convolver.buffer = makeImpulseResponse(audioContext);
+    reverbGain = audioContext.createGain();
+    reverbGain.gain.value =
+      reverbOn ? Number(els.reverbAmount.value) / 100 : 0;
+
+    delayNode = audioContext.createDelay(1.5);
     delayNode.delayTime.value = Number(els.delayTime.value) / 1000;
-    delayFeedback.gain.value = 0.2;
-    delayGain.gain.value = Number(els.delay.value) / 100 * 0.65;
 
-    // Main input and dynamics processing.
+    delayFeedback = audioContext.createGain();
+    delayFeedback.gain.value = delayOn ? 0.18 : 0;
+
+    delayGain = audioContext.createGain();
+    delayGain.gain.value =
+      delayOn ? Number(els.delayAmount.value) / 100 : 0;
+
+    masterGain = audioContext.createGain();
+    masterGain.gain.value = Number(els.masterOutput.value) / 100;
+
+    // A fast, strong output compressor helps catch peaks.
+    // It reduces clipping risk but is not a brick-wall limiter.
+    outputLimiter = audioContext.createDynamicsCompressor();
+    outputLimiter.threshold.value = -3;
+    outputLimiter.knee.value = 0;
+    outputLimiter.ratio.value = 20;
+    outputLimiter.attack.value = 0.003;
+    outputLimiter.release.value = 0.12;
+
+    analyser = audioContext.createAnalyser();
+    analyser.fftSize = 512;
+    audioDestination = audioContext.createMediaStreamDestination();
+
+    // Main vocal path.
     micSource.connect(gainNode);
-    gainNode.connect(compressorNode);
-    compressorNode.connect(waveshaper);
+    gainNode.connect(vocalCompressor);
+    vocalCompressor.connect(waveshaper);
 
-    // Five-band EQ, connected in series.
-    waveshaper.connect(eqNodes[0]);
+    let previousNode = waveshaper;
+    eqFilters.forEach(filter => {
+      previousNode.connect(filter);
+      previousNode = filter;
+    });
 
-    for (let i = 0; i < eqNodes.length - 1; i++) {
-      eqNodes[i].connect(eqNodes[i + 1]);
-    }
+    // Dry signal.
+    previousNode.connect(dryGain);
+    dryGain.connect(masterGain);
 
-    const finalEQ = eqNodes[eqNodes.length - 1];
-
-    // Dry, reverb and delay paths.
-    finalEQ.connect(dryGain);
-    dryGain.connect(audioDestination);
-
-    finalEQ.connect(convolver);
+    // Reverb signal.
+    previousNode.connect(convolver);
     convolver.connect(reverbGain);
-    reverbGain.connect(audioDestination);
+    reverbGain.connect(masterGain);
 
-    finalEQ.connect(delayNode);
+    // Delay signal with a controlled feedback loop.
+    previousNode.connect(delayNode);
     delayNode.connect(delayGain);
-    delayGain.connect(audioDestination);
-
+    delayGain.connect(masterGain);
     delayNode.connect(delayFeedback);
     delayFeedback.connect(delayNode);
 
-    finalEQ.connect(analyser);
+    // Master boost followed by peak control and recording output.
+    masterGain.connect(outputLimiter);
+    outputLimiter.connect(audioDestination);
 
-    updateEffects();
+    // Meter only; intentionally no speaker monitoring connection.
+    previousNode.connect(analyser);
+
+    updateInputGain();
+    updateCompression();
+    updateMasterOutput();
+    updateDistortion();
+    updateReverb();
+    updateDelay();
+    applyEq();
+
     startMeter();
   }
 
-  function updateEffects() {
-    $("gainValue").textContent = els.gain.value + "%";
-    $("compressionValue").textContent = els.compression.value + "%";
-    $("reverbValue").textContent = els.reverb.value + "%";
-    $("delayValue").textContent = els.delay.value + "%";
-    $("distortionValue").textContent = els.distortion.value + "%";
-    $("delayTimeValue").textContent = els.delayTime.value + " ms";
-
-    EQ_IDS.forEach(id => {
-      $(id + "Value").textContent = Number($(id).value) + " dB";
-    });
-
-    const preset = EQ_PRESETS[els.genericTone.value] || EQ_PRESETS.flat;
-    $("genericDescription").textContent = preset.description;
-
-    if (!audioContext) return;
-
-    const now = audioContext.currentTime;
-
-    gainNode.gain.setTargetAtTime(Number(els.gain.value) / 100, now, 0.025);
-
-    const comp = Number(els.compression.value);
-    compressorNode.ratio.setTargetAtTime(1 + comp / 10, now, 0.03);
-    compressorNode.threshold.setTargetAtTime(-6 - comp * 0.24, now, 0.03);
-
-    reverbGain.gain.setTargetAtTime(
-      Number(els.reverb.value) / 100 * 0.7, now, 0.03
-    );
-
-    delayGain.gain.setTargetAtTime(
-      Number(els.delay.value) / 100 * 0.65, now, 0.03
-    );
-
-    delayNode.delayTime.setTargetAtTime(
-      Number(els.delayTime.value) / 1000, now, 0.03
-    );
-
-    waveshaper.curve = makeDistortionCurve(
-      Number(els.distortion.value) / 100
-    );
-
-    // Select either the five-band manual EQ or the quick presets.
-    let gains;
-
-    if (els.eqMode.value === "advanced") {
-      gains = EQ_IDS.map(id => Number($(id).value));
-    } else {
-      gains = preset.gains;
-    }
-
-    eqNodes.forEach((filter, index) => {
-      filter.gain.setTargetAtTime(gains[index], now, 0.03);
-    });
-  }
-
-  function startMeter() {
-    stopMeter();
-    if (!analyser) return;
-
-    const data = new Uint8Array(analyser.frequencyBinCount);
-
-    function drawMeter() {
-      if (!analyser) return;
-
-      analyser.getByteTimeDomainData(data);
-
-      let sum = 0;
-      for (let i = 0; i < data.length; i++) {
-        const value = (data[i] - 128) / 128;
-        sum += value * value;
-      }
-
-      const rms = Math.sqrt(sum / data.length);
-      const percent = Math.min(100, Math.round(rms * 230));
-      $("gainMeter").style.width = percent + "%";
-
-      meterAnimation = requestAnimationFrame(drawMeter);
-    }
-
-    drawMeter();
-  }
-
-  function stopMeter() {
-    if (meterAnimation) cancelAnimationFrame(meterAnimation);
-    meterAnimation = null;
-    $("gainMeter").style.width = "0%";
-  }
-
-  async function stopCamera() {
-    if (isRecording && recorder && recorder.state !== "inactive") {
-      stopRecording();
-      showMessage("Stopping the recording before closing the camera.");
-      return;
-    }
-
-    stopMeter();
-
-    if (cameraStream) {
-      cameraStream.getTracks().forEach(track => track.stop());
-      cameraStream = null;
+  async function disposeAudioGraph() {
+    if (meterAnimation) {
+      cancelAnimationFrame(meterAnimation);
+      meterAnimation = null;
     }
 
     if (audioContext) {
-      try { await audioContext.close(); } catch (_) {}
+      const oldContext = audioContext;
+      audioContext = null;
+      try {
+        await oldContext.close();
+      } catch (e) {
+        console.warn("Could not close audio context:", e);
+      }
     }
 
-    audioContext = null;
     micSource = null;
     gainNode = null;
-    compressorNode = null;
+    vocalCompressor = null;
     waveshaper = null;
+    eqFilters = [];
     dryGain = null;
     convolver = null;
     reverbGain = null;
     delayNode = null;
     delayFeedback = null;
     delayGain = null;
+    masterGain = null;
+    outputLimiter = null;
     audioDestination = null;
     analyser = null;
-    eqNodes = [];
-
-    els.preview.srcObject = null;
-    els.placeholder.style.display = "flex";
-    els.cameraBtn.textContent = "Start Camera";
-    els.recordBtn.disabled = true;
-    els.flipBtn.disabled = true;
-    setStatus("Studio ready", false);
+    els.meterFill.style.width = "0%";
   }
 
-  async function startCamera() {
-    clearMessage();
+  function startMeter() {
+    if (!analyser) return;
 
-    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-      showMessage(
-        "Camera access is unavailable here. Open the published website over HTTPS in a supported browser."
-      );
+    const data = new Uint8Array(analyser.fftSize);
+
+    const draw = () => {
+      if (!analyser) return;
+      analyser.getByteTimeDomainData(data);
+
+      let sum = 0;
+      for (let i = 0; i < data.length; i++) {
+        const normalized = (data[i] - 128) / 128;
+        sum += normalized * normalized;
+      }
+
+      const rms = Math.sqrt(sum / data.length);
+      const percent = Math.min(100, rms * 260);
+      els.meterFill.style.width = percent + "%";
+
+      meterAnimation = requestAnimationFrame(draw);
+    };
+
+    draw();
+  }
+
+  async function openCamera() {
+    if (isRecording) {
+      toast("Stop recording before changing the camera.");
       return;
     }
 
-    els.cameraBtn.disabled = true;
-    els.cameraBtn.textContent = "Starting…";
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      toast("Camera access requires a supported browser and a secure HTTPS page.", 4500);
+      return;
+    }
+
+    els.startCameraBtn.disabled = true;
+    setStatus("STARTING");
 
     try {
       if (cameraStream) {
-        await stopCamera();
+        cameraStream.getTracks().forEach(track => track.stop());
+        cameraStream = null;
       }
-
-      const quality = Number(els.quality.value);
 
       cameraStream = await navigator.mediaDevices.getUserMedia({
         audio: {
           echoCancellation: false,
           noiseSuppression: false,
-          autoGainControl: false
+          autoGainControl: false,
+          channelCount: 1
         },
         video: {
           facingMode: facingMode,
-          width: { ideal: quality },
-          height: { ideal: Math.round(quality * 3 / 4) }
+          width: { ideal: 1920 },
+          height: { ideal: 1080 },
+          frameRate: { ideal: 30, max: 30 }
         }
       });
 
-      els.preview.srcObject = cameraStream;
-      els.preview.muted = true;
-      await els.preview.play();
-      els.placeholder.style.display = "none";
+      els.cameraPreview.srcObject = cameraStream;
+      els.cameraPreview.muted = true;
+      await els.cameraPreview.play().catch(() => {});
 
-      try {
-        await buildAudioGraph(cameraStream);
-      } catch (audioError) {
-        console.error("Audio effects setup failed:", audioError);
-        showMessage(
-          "The camera is running, but the audio effects could not initialize. " +
-          "Refresh the page and check microphone access. Details: " +
-          audioError.message
-        );
-      }
+      await buildAudioGraph(cameraStream);
 
-      els.cameraBtn.textContent = "Stop Camera";
+      els.cameraPlaceholder.classList.add("hidden");
       els.recordBtn.disabled = false;
       els.flipBtn.disabled = false;
-      setStatus("Camera active", true);
+      els.stopCameraBtn.disabled = false;
+      els.startCameraBtn.textContent = "Restart Camera";
+      setStatus("CAMERA READY");
+      toast("Camera and studio audio are ready.");
     } catch (error) {
       console.error(error);
-
-      let explanation = error.message || "Unknown error";
-
-      if (error.name === "NotAllowedError" ||
-          error.name === "PermissionDeniedError") {
-        explanation =
-          "Camera or microphone permission was denied. Allow access in your browser settings and try again.";
-      } else if (error.name === "NotFoundError" ||
-                 error.name === "DevicesNotFoundError") {
-        explanation = "No compatible camera or microphone was found.";
-      } else if (error.name === "NotReadableError") {
-        explanation =
-          "The camera may already be in use by another app. Close other camera apps and try again.";
+      if (cameraStream) {
+        cameraStream.getTracks().forEach(track => track.stop());
+        cameraStream = null;
       }
+      els.cameraPreview.srcObject = null;
+      els.cameraPlaceholder.classList.remove("hidden");
+      setStatus("CAMERA ERROR");
 
-      showMessage("Unable to start the camera.\n" + explanation);
-      els.cameraBtn.textContent = "Start Camera";
-      setStatus("Camera unavailable", false);
+      let message = "Could not start the camera or microphone.";
+      if (error.name === "NotAllowedError") {
+        message = "Camera or microphone access was denied. Check your browser permissions.";
+      } else if (error.name === "NotFoundError") {
+        message = "No suitable camera or microphone was found.";
+      } else if (error.name === "NotReadableError") {
+        message = "The camera may be in use by another app. Close it and try again.";
+      } else if (error.message) {
+        message = error.message;
+      }
+      toast(message, 5000);
     } finally {
-      els.cameraBtn.disabled = false;
+      els.startCameraBtn.disabled = false;
     }
   }
 
-  function chooseMimeType() {
+  async function stopCamera() {
+    if (isRecording) {
+      toast("Stop the recording before stopping the camera.");
+      return;
+    }
+
+    if (cameraStream) {
+      cameraStream.getTracks().forEach(track => track.stop());
+      cameraStream = null;
+    }
+
+    els.cameraPreview.pause();
+    els.cameraPreview.srcObject = null;
+    els.cameraPlaceholder.classList.remove("hidden");
+
+    await disposeAudioGraph();
+
+    els.recordBtn.disabled = true;
+    els.flipBtn.disabled = true;
+    els.stopCameraBtn.disabled = true;
+    els.startCameraBtn.textContent = "Start Camera";
+    setStatus("READY");
+  }
+
+  async function flipCamera() {
+    if (isRecording) {
+      toast("Stop recording before flipping the camera.");
+      return;
+    }
+
+    facingMode = facingMode === "user" ? "environment" : "user";
+    await openCamera();
+  }
+
+  function getRecordingMimeType() {
     if (!window.MediaRecorder) return "";
 
     const types = [
-      "video/mp4;codecs=avc1.42E01E,mp4a.40.2",
+      "video/mp4;codecs=h264,aac",
       "video/mp4",
       "video/webm;codecs=vp9,opus",
       "video/webm;codecs=vp8,opus",
@@ -1000,440 +1173,454 @@ footer {
     for (const type of types) {
       try {
         if (MediaRecorder.isTypeSupported(type)) return type;
-      } catch (_) {}
+      } catch (e) {}
     }
-
     return "";
   }
 
-  function startRecording() {
-    clearMessage();
+  function startTimer() {
+    clearInterval(timerInterval);
+    recordingStartedAt = Date.now();
+    els.timer.textContent = "00:00";
 
-    if (!cameraStream) {
-      showMessage("Start the camera before recording.");
+    timerInterval = setInterval(() => {
+      const seconds = Math.floor((Date.now() - recordingStartedAt) / 1000);
+      els.timer.textContent = formatTime(seconds);
+    }, 250);
+  }
+
+  function stopTimer() {
+    clearInterval(timerInterval);
+    timerInterval = null;
+  }
+
+  async function startRecording() {
+    if (!cameraStream || !audioDestination) {
+      toast("Start the camera first.");
       return;
     }
 
     if (!window.MediaRecorder) {
-      showMessage(
-        "This browser does not support video recording. Try a current version of Safari or Chrome."
-      );
+      toast("This browser does not support recording. Try a current version of Safari.", 4500);
       return;
     }
 
     try {
-      recordingChunks = [];
-
-      const tracks = [];
-      const videoTrack = cameraStream.getVideoTracks()[0];
-
-      if (videoTrack) tracks.push(videoTrack);
-
-      let audioTrack = null;
-
-      if (audioDestination &&
-          audioDestination.stream.getAudioTracks().length) {
-        audioTrack = audioDestination.stream.getAudioTracks()[0];
-      } else if (cameraStream.getAudioTracks().length) {
-        audioTrack = cameraStream.getAudioTracks()[0];
+      if (audioContext && audioContext.state === "suspended") {
+        await audioContext.resume();
       }
 
-      if (audioTrack) tracks.push(audioTrack);
+      const videoTrack = cameraStream.getVideoTracks()[0];
+      const processedAudioTrack = audioDestination.stream.getAudioTracks()[0];
 
-      const combinedStream = new MediaStream(tracks);
-      const mimeType = chooseMimeType();
-      const options = mimeType ? { mimeType } : undefined;
+      if (!videoTrack || !processedAudioTrack) {
+        toast("The camera or processed audio track is not ready.");
+        return;
+      }
 
-      recorder = new MediaRecorder(combinedStream, options);
+      const recordingStream = new MediaStream([
+        videoTrack,
+        processedAudioTrack
+      ]);
+
+      const mimeType = getRecordingMimeType();
+      const quality = els.quality.value;
+      const bitsPerSecond = quality === "standard"
+        ? 2500000
+        : quality === "maximum"
+          ? 12000000
+          : 6000000;
+
+      const options = { videoBitsPerSecond: bitsPerSecond };
+      if (mimeType) options.mimeType = mimeType;
+
+      recorder = new MediaRecorder(recordingStream, options);
+      recordedChunks = [];
 
       recorder.ondataavailable = event => {
         if (event.data && event.data.size > 0) {
-          recordingChunks.push(event.data);
+          recordedChunks.push(event.data);
         }
       };
 
       recorder.onerror = event => {
         console.error("Recorder error:", event);
-        showMessage("A recording error occurred. Try a shorter clip.");
+        toast("A recording error occurred.", 4000);
       };
 
-      recorder.onstop = async function () {
-        isRecording = false;
-        els.recIndicator.classList.remove("active");
-        els.recordBtn.textContent = "● Record";
-        els.recordBtn.classList.remove("primary");
-        els.recordBtn.classList.add("record");
+      recorder.onstop = async () => {
+        stopTimer();
 
         const actualType = recorder && recorder.mimeType
           ? recorder.mimeType
           : (mimeType || "video/webm");
 
-        const blob = new Blob(recordingChunks, { type: actualType });
-        recordingChunks = [];
-
+        const blob = new Blob(recordedChunks, { type: actualType });
         if (!blob.size) {
-          showMessage(
-            "The recording was empty. Try again and check camera and microphone permissions."
-          );
-          setStatus("Camera active", !!cameraStream);
+          toast("No recording data was captured.");
           return;
         }
 
-        if (latestUrl) URL.revokeObjectURL(latestUrl);
-        latestUrl = URL.createObjectURL(blob);
+        showLatestRecording(blob, actualType);
+        await saveRecording(blob, actualType);
 
-        const ext = actualType.toLowerCase().includes("mp4")
-          ? "mp4"
-          : "webm";
-
-        const name = (els.projectName.value.trim() || "VocalCam-recording")
-          .replace(/[\\/:*?"<>|]+/g, "-");
-
-        els.recordedVideo.src = latestUrl;
-        els.downloadLink.href = latestUrl;
-        els.downloadLink.download = name + "." + ext;
-        els.fileInfo.textContent =
-          "Size: " + formatBytes(blob.size) +
-          " · Duration: " +
-          Math.round((Date.now() - recordingStartedAt) / 1000) +
-          " seconds";
-
-        els.result.classList.add("show");
-
-        try {
-          await saveRecording(name, blob, actualType, ext);
-          await renderLibrary();
-        } catch (error) {
-          console.error("Library save failed:", error);
-          showMessage(
-            "Your recording is ready to download, but could not be saved in the library on this device."
-          );
-        }
-
-        setStatus("Recording ready", !!cameraStream);
+        isRecording = false;
+        els.recordBtn.textContent = "● Record";
+        els.recordBtn.classList.add("record");
+        els.recordBtn.classList.remove("active");
+        els.startCameraBtn.disabled = false;
+        els.flipBtn.disabled = false;
+        els.stopCameraBtn.disabled = false;
+        setStatus("CAMERA READY");
+        toast("Recording saved to your library.");
       };
 
       recorder.start(1000);
       isRecording = true;
-      recordingStartedAt = Date.now();
 
-      els.recIndicator.classList.add("active");
-      els.recordBtn.textContent = "■ Stop";
+      els.recordBtn.textContent = "■ Stop Recording";
       els.recordBtn.classList.remove("record");
-      els.recordBtn.classList.add("primary");
+      els.recordBtn.classList.add("active");
+      els.startCameraBtn.disabled = true;
+      els.flipBtn.disabled = true;
+      els.stopCameraBtn.disabled = true;
 
-      setStatus("Recording", true);
+      setStatus("RECORDING");
+      startTimer();
+      toast("Recording started.");
     } catch (error) {
       console.error(error);
-      showMessage("Could not start recording: " + (error.message || error));
+      toast("Could not start recording: " + (error.message || "unknown error"), 4500);
     }
   }
 
   function stopRecording() {
-    if (recorder && recorder.state !== "inactive") {
-      try {
-        recorder.stop();
-      } catch (error) {
-        console.error(error);
-      }
+    if (recorder && isRecording && recorder.state !== "inactive") {
+      recorder.stop();
+      setStatus("FINALIZING");
+      els.recordBtn.disabled = true;
     }
+  }
+
+  function toggleRecording() {
+    if (isRecording) {
+      stopRecording();
+    } else {
+      startRecording();
+    }
+  }
+
+  function showLatestRecording(blob, mimeType) {
+    if (latestBlobUrl) URL.revokeObjectURL(latestBlobUrl);
+    latestBlobUrl = URL.createObjectURL(blob);
+
+    els.latestVideo.src = latestBlobUrl;
+    els.latestPanel.classList.remove("hidden");
+
+    const extension = mimeType.includes("mp4") ? "mp4" : "webm";
+    const name = safeName(els.projectName.value || "VocalCam Recording");
+    els.downloadLatest.href = latestBlobUrl;
+    els.downloadLatest.download = name + "." + extension;
+
+    const mb = (blob.size / (1024 * 1024)).toFixed(2);
+    els.latestInfo.textContent =
+      "File size: " + mb + " MB · Format: " + extension.toUpperCase();
   }
 
   function openDatabase() {
-    if (dbPromise) return dbPromise;
-
-    dbPromise = new Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
       if (!("indexedDB" in window)) {
-        reject(new Error("IndexedDB is unavailable."));
+        reject(new Error("Local recording storage is unavailable in this browser."));
         return;
       }
 
-      const request = indexedDB.open("VocalCamStudioDB", 1);
+      const request = indexedDB.open(DB_NAME, DB_VERSION);
 
-      request.onupgradeneeded = function () {
-        const db = request.result;
-
-        if (!db.objectStoreNames.contains("recordings")) {
-          const store = db.createObjectStore("recordings", {
+      request.onupgradeneeded = event => {
+        const database = event.target.result;
+        if (!database.objectStoreNames.contains(STORE_NAME)) {
+          const store = database.createObjectStore(STORE_NAME, {
             keyPath: "id",
             autoIncrement: true
           });
-
-          store.createIndex("createdAt", "createdAt", {
-            unique: false
-          });
+          store.createIndex("createdAt", "createdAt", { unique: false });
         }
       };
-
-      request.onsuccess = () => resolve(request.result);
-      request.onerror = () => reject(
-        request.error || new Error("Database could not open.")
-      );
-    });
-
-    return dbPromise;
-  }
-
-  async function saveRecording(name, blob, type, ext) {
-    const db = await openDatabase();
-
-    return new Promise((resolve, reject) => {
-      const tx = db.transaction("recordings", "readwrite");
-
-      tx.objectStore("recordings").add({
-        name,
-        blob,
-        type,
-        ext,
-        createdAt: Date.now(),
-        size: blob.size
-      });
-
-      tx.oncomplete = () => resolve();
-      tx.onerror = () => reject(
-        tx.error || new Error("Could not save recording.")
-      );
-      tx.onabort = () => reject(
-        tx.error || new Error("Save cancelled.")
-      );
-    });
-  }
-
-  async function getRecordings() {
-    const db = await openDatabase();
-
-    return new Promise((resolve, reject) => {
-      const tx = db.transaction("recordings", "readonly");
-      const request = tx.objectStore("recordings").getAll();
 
       request.onsuccess = () => {
-        const items = request.result || [];
-        items.sort((a, b) => b.createdAt - a.createdAt);
-        resolve(items);
+        db = request.result;
+        resolve(db);
       };
-
-      request.onerror = () => reject(
-        request.error || new Error("Could not read library.")
-      );
+      request.onerror = () => reject(request.error);
     });
   }
 
-  async function deleteRecording(id) {
-    const db = await openDatabase();
-
+  function saveBlobToDatabase(record) {
     return new Promise((resolve, reject) => {
-      const tx = db.transaction("recordings", "readwrite");
-      tx.objectStore("recordings").delete(id);
-
-      tx.oncomplete = () => resolve();
-      tx.onerror = () => reject(
-        tx.error || new Error("Could not delete recording.")
-      );
-    });
-  }
-
-  async function renderLibrary() {
-    els.library.replaceChildren();
-
-    let items;
-
-    try {
-      items = await getRecordings();
-    } catch (error) {
-      els.library.textContent =
-        "The recording library is unavailable in this browser. You can still record and download videos.";
-      return;
-    }
-
-    if (!items.length) {
-      const empty = document.createElement("div");
-      empty.className = "note";
-      empty.textContent =
-        "No recordings saved yet. Make a recording to get started.";
-      els.library.appendChild(empty);
-      return;
-    }
-
-    for (const item of items) {
-      const row = document.createElement("div");
-      row.className = "library-item";
-
-      const info = document.createElement("div");
-      info.style.minWidth = "0";
-
-      const title = document.createElement("div");
-      title.className = "file-title";
-      title.textContent = item.name || "VocalCam recording";
-
-      const meta = document.createElement("div");
-      meta.className = "file-meta";
-      meta.textContent =
-        new Date(item.createdAt).toLocaleString() +
-        " · " + formatBytes(item.size);
-
-      info.append(title, meta);
-
-      const actions = document.createElement("div");
-      actions.style.display = "flex";
-      actions.style.gap = "6px";
-
-      const download = document.createElement("button");
-      download.type = "button";
-      download.textContent = "Save";
-
-      download.addEventListener("click", () => {
-        const url = URL.createObjectURL(item.blob);
-        const a = document.createElement("a");
-
-        a.href = url;
-        a.download =
-          (item.name || "VocalCam-recording") +
-          "." + (item.ext || "webm");
-
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-
-        setTimeout(() => URL.revokeObjectURL(url), 30000);
-      });
-
-      const remove = document.createElement("button");
-      remove.type = "button";
-      remove.textContent = "Delete";
-
-      remove.addEventListener("click", async () => {
-        if (!confirm("Delete this recording from the library?")) return;
-
-        try {
-          await deleteRecording(item.id);
-          await renderLibrary();
-        } catch (error) {
-          showMessage("Could not delete this recording.");
-        }
-      });
-
-      actions.append(download, remove);
-      row.append(info, actions);
-      els.library.appendChild(row);
-    }
-  }
-
-  // Camera controls.
-  els.cameraBtn.addEventListener("click", async () => {
-    if (cameraStream) {
-      if (isRecording) {
-        showMessage("Stop the recording before stopping the camera.");
+      if (!db) {
+        reject(new Error("Recording library is not ready."));
         return;
       }
 
-      await stopCamera();
-      clearMessage();
-    } else {
-      await startCamera();
+      const transaction = db.transaction(STORE_NAME, "readwrite");
+      transaction.objectStore(STORE_NAME).add(record);
+      transaction.oncomplete = () => resolve();
+      transaction.onerror = () => reject(transaction.error);
+      transaction.onabort = () => reject(transaction.error);
+    });
+  }
+
+  async function saveRecording(blob, mimeType) {
+    try {
+      if (!db) await openDatabase();
+
+      const extension = mimeType.includes("mp4") ? "mp4" : "webm";
+      const record = {
+        name: safeName(els.projectName.value || "VocalCam Recording"),
+        createdAt: Date.now(),
+        size: blob.size,
+        mimeType: mimeType,
+        extension: extension,
+        blob: blob
+      };
+
+      await saveBlobToDatabase(record);
+      await refreshLibrary();
+    } catch (error) {
+      console.error("Library save failed:", error);
+      toast("Recording created, but it could not be saved to the in-app library. Download it instead.", 5000);
+    } finally {
+      isRecording = false;
+      els.recordBtn.disabled = false;
+      els.recordBtn.textContent = "● Record";
+      els.recordBtn.classList.add("record");
+      els.recordBtn.classList.remove("active");
+      els.startCameraBtn.disabled = !cameraStream;
+      els.flipBtn.disabled = !cameraStream;
+      els.stopCameraBtn.disabled = !cameraStream;
+      setStatus(cameraStream ? "CAMERA READY" : "READY");
     }
-  });
+  }
 
-  els.recordBtn.addEventListener("click", () => {
-    if (isRecording) stopRecording();
-    else startRecording();
-  });
+  function getAllRecordings() {
+    return new Promise((resolve, reject) => {
+      if (!db) {
+        resolve([]);
+        return;
+      }
 
-  els.flipBtn.addEventListener("click", async () => {
-    if (isRecording) {
-      showMessage("Stop recording before flipping the camera.");
-      return;
+      const transaction = db.transaction(STORE_NAME, "readonly");
+      const request = transaction.objectStore(STORE_NAME).getAll();
+
+      request.onsuccess = () => {
+        const records = request.result || [];
+        records.sort((a, b) => b.createdAt - a.createdAt);
+        resolve(records);
+      };
+      request.onerror = () => reject(request.error);
+    });
+  }
+
+  function deleteRecording(id) {
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction(STORE_NAME, "readwrite");
+      transaction.objectStore(STORE_NAME).delete(id);
+      transaction.oncomplete = resolve;
+      transaction.onerror = () => reject(transaction.error);
+    });
+  }
+
+  async function refreshLibrary() {
+    try {
+      if (!db) await openDatabase();
+      const records = await getAllRecordings();
+
+      els.libraryList.innerHTML = "";
+
+      if (!records.length) {
+        const empty = document.createElement("p");
+        empty.className = "small";
+        empty.textContent = "No saved recordings yet.";
+        els.libraryList.appendChild(empty);
+        return;
+      }
+
+      records.forEach(record => {
+        const card = document.createElement("div");
+        card.className = "recording-card";
+
+        const title = document.createElement("div");
+        title.className = "recording-title";
+        title.textContent = record.name || "VocalCam Recording";
+
+        const meta = document.createElement("div");
+        meta.className = "recording-meta";
+        meta.textContent =
+          new Date(record.createdAt).toLocaleString() +
+          " · " + (record.size / (1024 * 1024)).toFixed(2) + " MB";
+
+        const actions = document.createElement("div");
+        actions.className = "recording-actions";
+
+        const download = document.createElement("button");
+        download.textContent = "Download";
+        download.className = "primary";
+        download.addEventListener("click", () => {
+          const url = URL.createObjectURL(record.blob);
+          const link = document.createElement("a");
+          link.href = url;
+          link.download = safeName(record.name) + "." +
+            (record.extension || "webm");
+          document.body.appendChild(link);
+          link.click();
+          link.remove();
+          setTimeout(() => URL.revokeObjectURL(url), 60000);
+        });
+
+        const play = document.createElement("button");
+        play.textContent = "Play";
+        play.addEventListener("click", () => {
+          showLatestRecording(record.blob, record.mimeType || "video/webm");
+          els.latestPanel.scrollIntoView({ behavior: "smooth", block: "start" });
+        });
+
+        const remove = document.createElement("button");
+        remove.textContent = "Delete";
+        remove.addEventListener("click", async () => {
+          const confirmed = window.confirm("Delete this recording from the library?");
+          if (!confirmed) return;
+
+          try {
+            await deleteRecording(record.id);
+            await refreshLibrary();
+            toast("Recording deleted.");
+          } catch (error) {
+            console.error(error);
+            toast("Could not delete this recording.");
+          }
+        });
+
+        actions.append(download, play, remove);
+        card.append(title, meta, actions);
+        els.libraryList.appendChild(card);
+      });
+    } catch (error) {
+      console.error(error);
+      els.libraryList.textContent =
+        "The recording library could not be opened in this browser.";
     }
+  }
 
-    facingMode = facingMode === "user" ? "environment" : "user";
-    await startCamera();
-  });
+  function resetAudioSettings() {
+    els.gain.value = "100";
+    els.compression.value = "65";
+    els.masterOutput.value = "150";
+    els.eqMode.value = "generic";
+    els.eqPreset.value = "presence";
+    els.reverbAmount.value = "20";
+    els.delayAmount.value = "15";
+    els.delayTime.value = "280";
+    els.distortionAmount.value = "15";
 
-  // EQ mode switch.
-  els.eqMode.addEventListener("change", () => {
-    const advanced = els.eqMode.value === "advanced";
+    reverbOn = false;
+    delayOn = false;
+    distortionOn = false;
 
-    $("genericEQ").style.display = advanced ? "none" : "block";
-    $("advancedEQ").style.display = advanced ? "block" : "none";
-
-    updateEffects();
-  });
-
-  els.genericTone.addEventListener("change", updateEffects);
-
-  EQ_IDS.forEach(id => {
-    $(id).addEventListener("input", updateEffects);
-  });
-
-  $("resetEQ").addEventListener("click", () => {
-    EQ_IDS.forEach(id => {
-      $(id).value = 0;
+    eqBands.forEach((band, i) => {
+      const slider = $("eqBand" + i);
+      if (slider) slider.value = presets.presence.gains[i];
+      const number = $("eqBandValue" + i);
+      if (number) {
+        const value = presets.presence.gains[i];
+        number.textContent = value > 0 ? "+" + value + " dB" : value + " dB";
+      }
     });
 
-    updateEffects();
+    updateInputGain();
+    updateCompression();
+    updateMasterOutput();
+    updatePresetDescription();
+    updateDistortion();
+    updateReverb();
+    updateDelay();
+    updateEqMode();
+    applyEqIfReady();
+    toast("Audio settings reset.");
+  }
+
+  els.startCameraBtn.addEventListener("click", openCamera);
+  els.flipBtn.addEventListener("click", flipCamera);
+  els.stopCameraBtn.addEventListener("click", stopCamera);
+  els.recordBtn.addEventListener("click", toggleRecording);
+  els.resetSettingsBtn.addEventListener("click", resetAudioSettings);
+  els.refreshLibraryBtn.addEventListener("click", refreshLibrary);
+
+  els.gain.addEventListener("input", updateInputGain);
+  els.compression.addEventListener("input", updateCompression);
+  els.masterOutput.addEventListener("input", updateMasterOutput);
+
+  els.eqMode.addEventListener("change", updateEqMode);
+  els.eqPreset.addEventListener("change", () => {
+    updatePresetDescription();
+    applyEqIfReady();
   });
 
-  // Other audio controls.
-  [
-    els.gain,
-    els.compression,
-    els.reverb,
-    els.delay,
-    els.distortion,
-    els.delayTime
-  ].forEach(control => {
-    control.addEventListener("input", updateEffects);
+  els.flatEqBtn.addEventListener("click", () => {
+    eqBands.forEach((band, i) => {
+      $("eqBand" + i).value = 0;
+      $("eqBandValue" + i).textContent = "0 dB";
+    });
+    els.eqMode.value = "advanced";
+    updateEqMode();
+    applyEqIfReady();
   });
 
-  els.quality.addEventListener("change", () => {
-    if (cameraStream) {
-      showMessage(
-        "Stop the camera and restart it to apply the new video quality."
-      );
-    }
+  els.reverbToggle.addEventListener("click", () => {
+    reverbOn = !reverbOn;
+    updateReverb();
   });
 
-  $("offBtn").addEventListener("click", () => {
-    els.reverb.value = 0;
-    els.delay.value = 0;
-    els.distortion.value = 0;
-    updateEffects();
+  els.delayToggle.addEventListener("click", () => {
+    delayOn = !delayOn;
+    updateDelay();
   });
 
-  $("refreshLibrary").addEventListener("click", renderLibrary);
-
-  $("closeResultBtn").addEventListener("click", () => {
-    els.result.classList.remove("show");
+  els.distortionToggle.addEventListener("click", () => {
+    distortionOn = !distortionOn;
+    updateDistortion();
+    els.distortionToggle.textContent =
+      "Distortion: " + (distortionOn ? "ON" : "OFF");
+    els.distortionToggle.classList.toggle("active", distortionOn);
   });
 
-  $("darkToggle").addEventListener("click", () => {
-    const isDim = document.body.dataset.dim === "yes";
-
-    document.body.dataset.dim = isDim ? "no" : "yes";
-    document.body.style.setProperty(
-      "--bg", isDim ? "#090b10" : "#151923"
-    );
-    document.body.style.setProperty(
-      "--panel", isDim ? "#131722" : "#202635"
-    );
-
-    $("darkToggle").textContent = isDim ? "Studio" : "Dark";
-  });
+  els.reverbAmount.addEventListener("input", updateReverb);
+  els.delayAmount.addEventListener("input", updateDelay);
+  els.delayTime.addEventListener("input", updateDelay);
+  els.distortionAmount.addEventListener("input", updateDistortion);
 
   window.addEventListener("pagehide", () => {
-    if (cameraStream) {
-      cameraStream.getTracks().forEach(track => track.stop());
-    }
-
-    if (audioContext) {
-      audioContext.close().catch(() => {});
-    }
-
-    if (latestUrl) URL.revokeObjectURL(latestUrl);
+    if (meterAnimation) cancelAnimationFrame(meterAnimation);
+    // Do not stop a recording automatically here; iOS may navigate or suspend
+    // pages when switching apps, so download important recordings promptly.
   });
 
-  // Initialize the interface without requesting camera access.
-  renderLibrary();
-  setStatus("Studio ready", false);
+  createAdvancedEqControls();
+  updateInputGain();
+  updateCompression();
+  updateMasterOutput();
+  updatePresetDescription();
+  updateReverb();
+  updateDelay();
+  updateDistortion();
+  updateEqMode();
+
+  openDatabase()
+    .then(refreshLibrary)
+    .catch(error => {
+      console.warn("Recording library initialization:", error);
+      els.libraryList.textContent =
+        "The recording library will be available if browser storage is supported.";
+    });
 })();
 </script>
 </body>
